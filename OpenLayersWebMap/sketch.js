@@ -97,6 +97,8 @@ function drawMask(){  // draw the rectangle on the website
     rect(windowWidth * margin, windowHeight * margin, windowWidth * (1 - 2 * margin), windowHeight * (1 - 2 * margin));
 }
 
+subsetEdges = [];
+
 function getOverpassData() { //load nodes and edge map data in XML format from OpenStreetMap via the Overpass API
 	showMessage("Loading map data…");
 	canvas.position(0, 34); // start canvas just below logo image
@@ -121,6 +123,8 @@ function getOverpassData() { //load nodes and edge map data in XML format from O
 		let OverpassResponse = response;
 		var parser = new DOMParser();
 		OSMxml = parser.parseFromString(OverpassResponse, "text/xml");
+		console.log(OSMxml);
+
 		var XMLnodes = OSMxml.getElementsByTagName("node")
 		var XMLways = OSMxml.getElementsByTagName("way")
 		numnodes = XMLnodes.length;
@@ -157,8 +161,16 @@ function getOverpassData() { //load nodes and edge map data in XML format from O
 			}
 		}
 		mode = selectnodemode;
-		showMessage("Click on start of route");
+		extractEdges();
+		showMessage("mode is selectnodemode");
 	});
+}
+
+function extractEdges() {
+	for (let i = 0; i < numways/2; i++){
+		subsetEdges.push(edges[i])
+	}
+	console.log(subsetEdges)
 }
 
 function showMessage(msg) {
@@ -204,6 +216,11 @@ function showEdges() {
 	let closestedgetomousedist = Infinity;
 	for (let i = 0; i < edges.length; i++) {
 		edges[i].show();
+
+
+
+
+		
 		if (mode == trimmode) {
 			let dist = edges[i].distanceToPoint(mouseX, mouseY)
 			if (dist < closestedgetomousedist) {
@@ -220,8 +237,8 @@ function showEdges() {
 
 function mousePressed() { // clicked on map to select a node
 	if (mode == choosemapmode && mouseY < btnBRy && mouseY > btnTLy && mouseX > btnTLx && mouseX < btnBRx) { // Was in Choose map mode and clicked on button
-		getOverpassData();
-        mode = selectnodemode
+		getOverpassData(); // gets road data from framed area on map
+        mode = selectnodemode 
         console.log(mode)
 		return;
 	}
