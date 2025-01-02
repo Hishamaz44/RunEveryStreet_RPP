@@ -1,4 +1,4 @@
-class Node {
+class Node1 {
 	constructor(nodeId_, lat_, lon_) {
 		this.nodeId = nodeId_;
 		this.lat = lat_;

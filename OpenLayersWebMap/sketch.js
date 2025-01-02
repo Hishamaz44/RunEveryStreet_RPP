@@ -143,7 +143,7 @@ function getOverpassData() { //load nodes and edge map data in XML format from O
 			var lat = XMLnodes[i].getAttribute('lat');
 			var lon = XMLnodes[i].getAttribute('lon');
 			var nodeid = XMLnodes[i].getAttribute('id');
-			let node = new Node(nodeid, lat, lon);
+			let node = new Node1(nodeid, lat, lon);
 			nodes.push(node);
 		}
 		//parse ways into edges

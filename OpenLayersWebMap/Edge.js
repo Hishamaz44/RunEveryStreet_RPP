@@ -18,6 +18,28 @@ class Edge { //section of road that connects nodes
 		stroke(55, 255, 255, 0.8);
 		line(this.from.x, this.from.y, this.to.x, this.to.y);
 		fill(0);
+		// noStroke();
+		if (this.hovered){
+			strokeWeight(4); // Thicker line when hovered
+			stroke(0, 255, 255, 0.8);
+		}
+		else if(this.selected){
+			strokeWeight(5);
+			stroke(100, 255, 255, 0.8);
+		}
+	}
+
+	show2() {
+		// Map the coordinates from lat/lon to screen coordinates
+		let x1 = map(this.from.lon, mapminlon, mapmaxlon, 0, mapWidth);
+		let y1 = map(this.from.lat, mapminlat, mapmaxlat, mapHeight, 0);
+		let x2 = map(this.to.lon, mapminlon, mapmaxlon, 0, mapWidth);
+		let y2 = map(this.to.lat, mapminlat, mapmaxlat, mapHeight, 0);
+		
+		strokeWeight(min(10, (this.travels + 1) * 2));
+		stroke(200, 255, 255, 0.8);
+		line(x1, y1, x2, y2); // Use mapped coordinates
+		fill(0);
 		noStroke();
 	}
 
