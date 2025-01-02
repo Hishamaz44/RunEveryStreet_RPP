@@ -75,6 +75,8 @@ function setup() { // This code snippet initializes the values
     margin = 0.1;
     showMessage("Zoom to selected area, then click here");
     
+
+    loadgpx()
 }
 
 function draw(){ //main loop that gets run while the website is running
@@ -82,7 +84,7 @@ function draw(){ //main loop that gets run while the website is running
         isTouchScreenDevice = true;
     }
     clear();
-    drawMask();
+    drawMask();         
     if (mode != choosemapmode) { // choosemapmode is the first mode (choosing a frame from the map)
         if (showRoads) {
             showEdges();
@@ -127,6 +129,7 @@ function getOverpassData() { //load nodes and edge map data in XML format from O
 
 		var XMLnodes = OSMxml.getElementsByTagName("node")
 		var XMLways = OSMxml.getElementsByTagName("way")
+        console.log(XMLways);
 		numnodes = XMLnodes.length;
 		numways = XMLways.length;
 		for (let i = 0; i < numnodes; i++) {
@@ -170,7 +173,7 @@ function extractEdges() {
 	for (let i = 0; i < numways/2; i++){
 		subsetEdges.push(edges[i])
 	}
-	console.log(subsetEdges)
+	// console.log(subsetEdges)
 }
 
 function showMessage(msg) {
@@ -216,11 +219,6 @@ function showEdges() {
 	let closestedgetomousedist = Infinity;
 	for (let i = 0; i < edges.length; i++) {
 		edges[i].show();
-
-
-
-
-		
 		if (mode == trimmode) {
 			let dist = edges[i].distanceToPoint(mouseX, mouseY)
 			if (dist < closestedgetomousedist) {
@@ -264,4 +262,81 @@ function calcdistance(lat1, long1, lat2, long2) {
 	lat2 = radians(lat2);
 	long2 = radians(long2);
 	return 2 * asin(sqrt(pow(sin((lat2 - lat1) / 2), 2) + cos(lat1) * cos(lat2) * pow(sin((long2 - long1) / 2), 2))) * 6371.0;
+}
+
+function loadGPXFile(file){
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let parser = new DOMParser();
+        let gpxData = parser.parseFromString(e.target.result, "text/xml");
+        displayGPX(gpxData);
+        console.log()
+    };
+    reader.readAsText(file)
+}
+
+
+// AI generated code
+
+
+function loadgpx(){
+    fetch("routes/testroute.gpx")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            let parser = new DOMParser();
+            let gpxData = parser.parseFromString(data, "text/xml");
+            let gpxPoints = gpxData.getElementsByTagName("trkpt");
+            displayGPXTrack(gpxData)
+            // console.log(gpxPoints);
+            let gpxLat = []
+            let gpxLon = []
+            for (let i = 0; i < gpxPoints.length; i++){
+                let lat = gpxPoints[i].getAttribute("lat");
+                let lon = gpxPoints[i].getAttribute("lon");
+                gpxLat.push(lat);
+                gpxLon.push(lon);
+            } 
+            
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+function displayGPXTrack(gpxData) {
+    let vectorSource = new ol.source.Vector({
+        features: new ol.format.GPX().readFeatures(gpxData, {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:3857'
+        })
+    });
+
+    // Create a vector layer with blue style
+    let vectorLayer = new ol.layer.Vector({
+        source: vectorSource,
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'blue',
+                width: 4
+            })
+        })
+    });
+
+    // Add the layer to the map
+    openlayersmap.addLayer(vectorLayer);
+    const toggleButton = document.getElementById('toggle-layer');
+    toggleButton.addEventListener('click', () => {
+        if (vectorLayer.getVisible()){
+            vectorLayer.setVisible(false);
+        }
+        else {
+            vectorLayer.setVisible(true);
+        }
+    })
+
 }

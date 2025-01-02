@@ -50,6 +50,9 @@
 		canvas {
 			margin:auto;
 		}
+		.layer-button{
+			position:fixed;width:120px;top:px;right:100px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;
+		}
 	</style>
 </head>
 <body style="background-color:black;">
@@ -57,10 +60,15 @@
 	<div style='position:fixed;width:120px;top:32px;right:0px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;'>
 		<a href="https://codeberg.org/lejun/RunEveryStreet/">Source Code</a>
 	</div>
+	<div></div>
 	<div style='position:fixed;width:40px;top:32px;right:0px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;'>
 		<a href=".">Restart</a>
+		<button class="layer-button" id="toggle-layer">vectorlayer</button>
 	</div>
 	<div id="map" class="map"></div>
+	<!-- <div>
+		<button class="layer-button">Activate/deactivate vectorlayer</button>
+	</div> -->
 	<script src="sketch.js"></script>
 	<script src="Edge.js"></script>
 	<script src="Node1.js"></script>
