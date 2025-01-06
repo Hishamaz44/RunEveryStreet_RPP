@@ -74,9 +74,18 @@ function setup() { // This code snippet initializes the values
     iterationsperframe = 1;
     margin = 0.1;
     showMessage("Zoom to selected area, then click here");
-    
 
-    loadgpx()
+	// AI Generated code
+    document.getElementById('gpxFile').addEventListener('change', function(e) {
+		let file = e.target.files[0];
+        if (file.name.endsWith('.gpx')) {
+			console.log("code is going here")
+            loadGPX(file);
+        } else {
+            alert('Please select a GPX file');
+        }
+	}) 
+	
 }
 
 function draw(){ //main loop that gets run while the website is running
@@ -264,51 +273,22 @@ function calcdistance(lat1, long1, lat2, long2) {
 	return 2 * asin(sqrt(pow(sin((lat2 - lat1) / 2), 2) + cos(lat1) * cos(lat2) * pow(sin((long2 - long1) / 2), 2))) * 6371.0;
 }
 
-function loadGPXFile(file){
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        let parser = new DOMParser();
-        let gpxData = parser.parseFromString(e.target.result, "text/xml");
-        displayGPX(gpxData);
-        console.log()
-    };
-    reader.readAsText(file)
-}
-
 
 // AI generated code
 
 
-function loadgpx(){
-    fetch("routes/testroute.gpx")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(data => {
-            let parser = new DOMParser();
-            let gpxData = parser.parseFromString(data, "text/xml");
-            let gpxPoints = gpxData.getElementsByTagName("trkpt");
-            displayGPXTrack(gpxData)
-            // console.log(gpxPoints);
-            let gpxLat = []
-            let gpxLon = []
-            for (let i = 0; i < gpxPoints.length; i++){
-                let lat = gpxPoints[i].getAttribute("lat");
-                let lon = gpxPoints[i].getAttribute("lon");
-                gpxLat.push(lat);
-                gpxLon.push(lon);
-            } 
-            
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
+function loadGPX(file){
+	let reader = new FileReader();
+	reader.onload = function(e){
+		let parser = new DOMParser();
+		let gpxData = parser.parseFromString(e.target.result, "text/xml")
+		displayGPXTrack(gpxData);
+	}
+	reader.readAsText(file);
 }
 
 function displayGPXTrack(gpxData) {
+	// Reads the features of the gpx data points.
     let vectorSource = new ol.source.Vector({
         features: new ol.format.GPX().readFeatures(gpxData, {
             dataProjection: 'EPSG:4326',
@@ -329,14 +309,22 @@ function displayGPXTrack(gpxData) {
 
     // Add the layer to the map
     openlayersmap.addLayer(vectorLayer);
+	vectorLayer.setVisible(false);
+
     const toggleButton = document.getElementById('toggle-layer');
     toggleButton.addEventListener('click', () => {
         if (vectorLayer.getVisible()){
+			console.log("if visible")
             vectorLayer.setVisible(false);
         }
-        else {
+        else  {
+			// openlayersmap.addLayer(vectorLayer);
+			console.log("if invisible")
             vectorLayer.setVisible(true);
         }
     })
 
 }
+
+
+// End of AI Generated code
