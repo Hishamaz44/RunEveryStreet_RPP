@@ -57,7 +57,6 @@ var isTouchScreenDevice = false;
 var totaluniqueroads;
 
 
-
 function setup() { // This code snippet initializes the values
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
@@ -277,14 +276,53 @@ function calcdistance(lat1, long1, lat2, long2) {
 // AI generated code
 
 
-function loadGPX(file){
-	let reader = new FileReader();
-	reader.onload = function(e){
-		let parser = new DOMParser();
-		let gpxData = parser.parseFromString(e.target.result, "text/xml")
-		displayGPXTrack(gpxData);
-	}
-	reader.readAsText(file);
+// function loadGPX(file){
+// 	let reader = new FileReader();
+// 	reader.onload = function(e){
+// 		let parser = new DOMParser();
+// 		let gpxData = parser.parseFromString(e.target.result, "text/xml")
+// 		let gpxPoints = gpxData.getElementsByTagName('trkpt')
+// 		console.log(gpxPoints);
+// 		displayGPXTrack(gpxData);
+// 		let gpxnodes = [];
+// 		let gpxedges = [];
+// 		for (let i = 0; i < gpxPoints.length; i++){
+// 			let lat = gpxPoints[i].getAttribute('lat');
+// 			let lon = gpxPoints[i].getAttribute('lon');
+// 			let id = "gpx-" + i;
+// 			let node = new Node1(id, lat, lon);
+// 			gpxnodes.push(node);
+// 		}
+// 		console.log(gpxnodes);
+
+// 	}
+// 	reader.readAsText(file);
+// }
+
+function loadGPX(file) {
+    let reader = new FileReader();
+    reader.onload = function (e) {
+        let parser = new DOMParser();
+        let gpxData = parser.parseFromString(e.target.result, "text/xml");
+        let gpxPoints = gpxData.getElementsByTagName('trkpt');
+        console.log(gpxPoints);
+        displayGPXTrack(gpxData);
+
+        let gpxnodes = [];
+        let gpxedges = [];
+
+        // Parse GPX nodes
+        for (let i = 0; i < gpxPoints.length; i++) {
+            let lat = gpxPoints[i].getAttribute('lat');
+            let lon = gpxPoints[i].getAttribute('lon');
+            let id = "gpx-" + i;
+            let node = new Node1(id, lat, lon);
+            gpxnodes.push(node);
+        }
+        console.log(gpxnodes);
+
+    };
+    reader.readAsText(file);
 }
 
 function displayGPXTrack(gpxData) {
