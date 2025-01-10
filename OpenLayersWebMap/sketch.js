@@ -78,7 +78,6 @@ function setup() { // This code snippet initializes the values
     document.getElementById('gpxFile').addEventListener('change', function(e) {
 		let file = e.target.files[0];
         if (file.name.endsWith('.gpx')) {
-			console.log("code is going here")
             loadGPX(file);
         } else {
             alert('Please select a GPX file');
@@ -137,7 +136,7 @@ function getOverpassData() { //load nodes and edge map data in XML format from O
 
 		var XMLnodes = OSMxml.getElementsByTagName("node")
 		var XMLways = OSMxml.getElementsByTagName("way")
-        console.log(XMLways);
+        console.log("XML ways: ", XMLways);
 		numnodes = XMLnodes.length;
 		numways = XMLways.length;
 		for (let i = 0; i < numnodes; i++) {
@@ -307,20 +306,21 @@ function loadGPX(file) {
         let gpxPoints = gpxData.getElementsByTagName('trkpt');
         console.log(gpxPoints);
         displayGPXTrack(gpxData);
-
+		
         let gpxnodes = [];
-        let gpxedges = [];
-
+		let gpxCoordinates = [];
         // Parse GPX nodes
         for (let i = 0; i < gpxPoints.length; i++) {
             let lat = gpxPoints[i].getAttribute('lat');
             let lon = gpxPoints[i].getAttribute('lon');
+			gpxCoordinates.push([lat, lon])
             let id = "gpx-" + i;
             let node = new Node1(id, lat, lon);
             gpxnodes.push(node);
         }
-        console.log(gpxnodes);
-
+		console.log("gpxnodes: ", gpxnodes);
+		console.log("gpxcoordinates: ", gpxCoordinates);
+		gpxToOverpass(gpxCoordinates);
     };
     reader.readAsText(file);
 }
@@ -361,8 +361,45 @@ function displayGPXTrack(gpxData) {
             vectorLayer.setVisible(true);
         }
     })
+}
 
+function gpxToOverpass(gpxCoordinates) {
+	let overpassEndpoint = "https://overpass-api.de/api/interpreter"
+
+	const constructQuery = (gpxCoordinates) => {
+		let nodeQueries = gpxCoordinates.map(
+			([lat, lon]) => `node(around:1,${lat},${lon});`
+		);
+		return `
+		[out:json];
+		(${nodeQueries.join("\n")});
+		out body;
+		way(bn);
+		out body;
+	`;
+	};
+
+	const query = constructQuery(gpxCoordinates);
+
+	async function fetchNodeAndEdges() {
+		try {
+			const response = await fetch(overpassEndpoint, {
+				method: "POST",
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+				body: `data=${encodeURIComponent(query)}`
+			});
+	
+			const data = await response.json();
+			console.log("Node and connected edges:", data);
+		} catch (error) {
+			console.error("Error fetching data from Overpass API:", error);
+		}
+	}
+	fetchNodeAndEdges();
 }
 
 
 // End of AI Generated code
+
+// For later Implementation: if i want to get the bestroute in the format of the overpass API, all i simply have to do is 
+// print bestroute, or save it in a variable. 
