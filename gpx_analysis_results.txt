@@ -1,0 +1,231 @@
+GPX File Analysis Results:
+
+1. Repeating Nodes: 88
+   1. Node at index 33 (51.8172541, 10.3350037) repeats at indices: 23
+   2. Node at index 34 (51.8172309, 10.3350663) repeats at indices: 22
+   3. Node at index 44 (51.8167163, 10.3363436) repeats at indices: 38
+   4. Node at index 45 (51.8167749, 10.3364691) repeats at indices: 43
+   5. Node at index 46 (51.8168794, 10.3365697) repeats at indices: 42
+   6. Node at index 47 (51.8169486, 10.3366079) repeats at indices: 41
+   7. Node at index 60 (51.8193909, 10.3392208) repeats at indices: 0
+   8. Node at index 62 (51.8193909, 10.3392208) repeats at indices: 0, 60
+   9. Node at index 63 (51.818952, 10.338723) repeats at indices: 59
+   10. Node at index 64 (51.8188956, 10.3386591) repeats at indices: 58
+   11. Node at index 70 (51.8184591, 10.3380166) repeats at indices: 13
+   12. Node at index 71 (51.8184257, 10.3380908) repeats at indices: 69
+   13. Node at index 73 (51.8182506, 10.3379805) repeats at indices: 52
+   14. Node at index 74 (51.8183957, 10.3380623) repeats at indices: 72
+   15. Node at index 75 (51.8184257, 10.3380908) repeats at indices: 69, 71
+   16. Node at index 76 (51.81839, 10.3381734) repeats at indices: 54
+   17. Node at index 79 (51.8176378, 10.3373488) repeats at indices: 50
+   18. Node at index 80 (51.817688, 10.3372195) repeats at indices: 14
+   19. Node at index 81 (51.8184591, 10.3380166) repeats at indices: 13, 70
+   20. Node at index 82 (51.8185718, 10.3381309) repeats at indices: 12
+   21. Node at index 83 (51.8185352, 10.338197) repeats at indices: 67
+   22. Node at index 84 (51.8184904, 10.3382782) repeats at indices: 55
+   23. Node at index 86 (51.8183542, 10.3382501) repeats at indices: 77
+   24. Node at index 87 (51.8184484, 10.3383485) repeats at indices: 85
+   25. Node at index 88 (51.8184904, 10.3382782) repeats at indices: 55, 84
+   26. Node at index 89 (51.8186668, 10.3384652) repeats at indices: 56
+   27. Node at index 90 (51.8187911, 10.3385814) repeats at indices: 57
+   28. Node at index 91 (51.8188956, 10.3386591) repeats at indices: 58, 64
+   29. Node at index 92 (51.8188143, 10.3385143) repeats at indices: 65
+   30. Node at index 93 (51.8187115, 10.3383869) repeats at indices: 66
+   31. Node at index 94 (51.8185352, 10.338197) repeats at indices: 67, 83
+   32. Node at index 95 (51.8185718, 10.3381309) repeats at indices: 12, 82
+   33. Node at index 96 (51.8187431, 10.3377178) repeats at indices: 11
+   34. Node at index 97 (51.8190316, 10.337022) repeats at indices: 10
+   35. Node at index 98 (51.8190686, 10.3369329) repeats at indices: 9
+   36. Node at index 102 (51.818159, 10.3360203) repeats at indices: 18
+   37. Node at index 103 (51.8181932, 10.3359332) repeats at indices: 27
+   38. Node at index 106 (51.8191043, 10.3368468) repeats at indices: 8
+   39. Node at index 124 (51.8207308, 10.3356985) repeats at indices: 115
+   40. Node at index 125 (51.8209274, 10.3351856) repeats at indices: 116
+   41. Node at index 126 (51.8209699, 10.3350735) repeats at indices: 117
+   42. Node at index 139 (51.8196628, 10.3354722) repeats at indices: 110
+   43. Node at index 142 (51.8201269, 10.3342467) repeats at indices: 131
+   44. Node at index 143 (51.8202588, 10.3343548) repeats at indices: 130
+   45. Node at index 144 (51.8204628, 10.3345608) repeats at indices: 129
+   46. Node at index 145 (51.8206812, 10.3347813) repeats at indices: 128
+   47. Node at index 150 (51.8206458, 10.3348639) repeats at indices: 148
+   48. Node at index 151 (51.8206549, 10.3348427) repeats at indices: 147
+   49. Node at index 152 (51.8206641, 10.3348228) repeats at indices: 146
+   50. Node at index 153 (51.8206812, 10.3347813) repeats at indices: 128, 145
+   51. Node at index 154 (51.8208548, 10.334957) repeats at indices: 127
+   52. Node at index 155 (51.8209699, 10.3350735) repeats at indices: 117, 126
+   53. Node at index 156 (51.821048, 10.3351842) repeats at indices: 118
+   54. Node at index 157 (51.821007, 10.3352996) repeats at indices: 119
+   55. Node at index 158 (51.8208141, 10.3357817) repeats at indices: 120
+   56. Node at index 160 (51.8205278, 10.3363829) repeats at indices: 113
+   57. Node at index 164 (51.8200059, 10.3377692) repeats at indices: 4
+   58. Node at index 170 (51.8202743, 10.3371507) repeats at indices: 162
+   59. Node at index 171 (51.8202224, 10.3370965) repeats at indices: 169
+   60. Node at index 172 (51.8202137, 10.3370882) repeats at indices: 168
+   61. Node at index 173 (51.8202046, 10.33708) repeats at indices: 167
+   62. Node at index 174 (51.8201808, 10.3370533) repeats at indices: 166
+   63. Node at index 176 (51.8205278, 10.3363829) repeats at indices: 113, 160
+   64. Node at index 177 (51.8206078, 10.3362971) repeats at indices: 159
+   65. Node at index 178 (51.8208141, 10.3357817) repeats at indices: 120, 158
+   66. Node at index 179 (51.8207843, 10.3357519) repeats at indices: 121
+   67. Node at index 180 (51.8207749, 10.3357426) repeats at indices: 122
+   68. Node at index 181 (51.8207649, 10.3357326) repeats at indices: 123
+   69. Node at index 182 (51.8207308, 10.3356985) repeats at indices: 115, 124
+   70. Node at index 183 (51.8205215, 10.3362443) repeats at indices: 114
+   71. Node at index 184 (51.8205278, 10.3363829) repeats at indices: 113, 160, 176
+   72. Node at index 185 (51.8203312, 10.336176) repeats at indices: 112
+   73. Node at index 186 (51.8199307, 10.3357542) repeats at indices: 111
+   74. Node at index 187 (51.8196628, 10.3354722) repeats at indices: 110, 139
+   75. Node at index 188 (51.819442, 10.3352377) repeats at indices: 138
+   76. Node at index 189 (51.8192455, 10.335029) repeats at indices: 137
+   77. Node at index 199 (51.8197097, 10.3338202) repeats at indices: 135
+   78. Node at index 200 (51.8196678, 10.3337789) repeats at indices: 198
+   79. Node at index 201 (51.8196105, 10.3337195) repeats at indices: 197
+   80. Node at index 202 (51.8192951, 10.3333926) repeats at indices: 196
+   81. Node at index 203 (51.819207, 10.3333032) repeats at indices: 195
+   82. Node at index 217 (51.8172902, 10.3349142) repeats at indices: 32
+   83. Node at index 218 (51.8173251, 10.3348274) repeats at indices: 216
+   84. Node at index 219 (51.8175973, 10.3341516) repeats at indices: 215
+   85. Node at index 220 (51.817821, 10.3335962) repeats at indices: 214
+   86. Node at index 221 (51.8187329, 10.3345295) repeats at indices: 191
+   87. Node at index 224 (51.8182276, 10.3358488) repeats at indices: 28
+   88. Node at index 227 (51.819151, 10.3367303) repeats at indices: 107
+
+2. Nodes with Same Coordinates: 74
+   1. Coordinates (51.8172541, 10.3350037) appear at nodes: 23, 33
+   2. Coordinates (51.8172309, 10.3350663) appear at nodes: 22, 34
+   3. Coordinates (51.8167163, 10.3363436) appear at nodes: 38, 44
+   4. Coordinates (51.8167749, 10.3364691) appear at nodes: 43, 45
+   5. Coordinates (51.8168794, 10.3365697) appear at nodes: 42, 46
+   6. Coordinates (51.8169486, 10.3366079) appear at nodes: 41, 47
+   7. Coordinates (51.8193909, 10.3392208) appear at nodes: 0, 60, 62
+   8. Coordinates (51.818952, 10.338723) appear at nodes: 59, 63
+   9. Coordinates (51.8188956, 10.3386591) appear at nodes: 58, 64, 91
+   10. Coordinates (51.8184591, 10.3380166) appear at nodes: 13, 70, 81
+   11. Coordinates (51.8184257, 10.3380908) appear at nodes: 69, 71, 75
+   12. Coordinates (51.8182506, 10.3379805) appear at nodes: 52, 73
+   13. Coordinates (51.8183957, 10.3380623) appear at nodes: 72, 74
+   14. Coordinates (51.81839, 10.3381734) appear at nodes: 54, 76
+   15. Coordinates (51.8176378, 10.3373488) appear at nodes: 50, 79
+   16. Coordinates (51.817688, 10.3372195) appear at nodes: 14, 80
+   17. Coordinates (51.8185718, 10.3381309) appear at nodes: 12, 82, 95
+   18. Coordinates (51.8185352, 10.338197) appear at nodes: 67, 83, 94
+   19. Coordinates (51.8184904, 10.3382782) appear at nodes: 55, 84, 88
+   20. Coordinates (51.8183542, 10.3382501) appear at nodes: 77, 86
+   21. Coordinates (51.8184484, 10.3383485) appear at nodes: 85, 87
+   22. Coordinates (51.8186668, 10.3384652) appear at nodes: 56, 89
+   23. Coordinates (51.8187911, 10.3385814) appear at nodes: 57, 90
+   24. Coordinates (51.8188143, 10.3385143) appear at nodes: 65, 92
+   25. Coordinates (51.8187115, 10.3383869) appear at nodes: 66, 93
+   26. Coordinates (51.8187431, 10.3377178) appear at nodes: 11, 96
+   27. Coordinates (51.8190316, 10.337022) appear at nodes: 10, 97
+   28. Coordinates (51.8190686, 10.3369329) appear at nodes: 9, 98
+   29. Coordinates (51.818159, 10.3360203) appear at nodes: 18, 102
+   30. Coordinates (51.8181932, 10.3359332) appear at nodes: 27, 103
+   31. Coordinates (51.8191043, 10.3368468) appear at nodes: 8, 106
+   32. Coordinates (51.8207308, 10.3356985) appear at nodes: 115, 124, 182
+   33. Coordinates (51.8209274, 10.3351856) appear at nodes: 116, 125
+   34. Coordinates (51.8209699, 10.3350735) appear at nodes: 117, 126, 155
+   35. Coordinates (51.8196628, 10.3354722) appear at nodes: 110, 139, 187
+   36. Coordinates (51.8201269, 10.3342467) appear at nodes: 131, 142
+   37. Coordinates (51.8202588, 10.3343548) appear at nodes: 130, 143
+   38. Coordinates (51.8204628, 10.3345608) appear at nodes: 129, 144
+   39. Coordinates (51.8206812, 10.3347813) appear at nodes: 128, 145, 153
+   40. Coordinates (51.8206458, 10.3348639) appear at nodes: 148, 150
+   41. Coordinates (51.8206549, 10.3348427) appear at nodes: 147, 151
+   42. Coordinates (51.8206641, 10.3348228) appear at nodes: 146, 152
+   43. Coordinates (51.8208548, 10.334957) appear at nodes: 127, 154
+   44. Coordinates (51.821048, 10.3351842) appear at nodes: 118, 156
+   45. Coordinates (51.821007, 10.3352996) appear at nodes: 119, 157
+   46. Coordinates (51.8208141, 10.3357817) appear at nodes: 120, 158, 178
+   47. Coordinates (51.8205278, 10.3363829) appear at nodes: 113, 160, 176, 184
+   48. Coordinates (51.8200059, 10.3377692) appear at nodes: 4, 164
+   49. Coordinates (51.8202743, 10.3371507) appear at nodes: 162, 170
+   50. Coordinates (51.8202224, 10.3370965) appear at nodes: 169, 171
+   51. Coordinates (51.8202137, 10.3370882) appear at nodes: 168, 172
+   52. Coordinates (51.8202046, 10.33708) appear at nodes: 167, 173
+   53. Coordinates (51.8201808, 10.3370533) appear at nodes: 166, 174
+   54. Coordinates (51.8206078, 10.3362971) appear at nodes: 159, 177
+   55. Coordinates (51.8207843, 10.3357519) appear at nodes: 121, 179
+   56. Coordinates (51.8207749, 10.3357426) appear at nodes: 122, 180
+   57. Coordinates (51.8207649, 10.3357326) appear at nodes: 123, 181
+   58. Coordinates (51.8205215, 10.3362443) appear at nodes: 114, 183
+   59. Coordinates (51.8203312, 10.336176) appear at nodes: 112, 185
+   60. Coordinates (51.8199307, 10.3357542) appear at nodes: 111, 186
+   61. Coordinates (51.819442, 10.3352377) appear at nodes: 138, 188
+   62. Coordinates (51.8192455, 10.335029) appear at nodes: 137, 189
+   63. Coordinates (51.8197097, 10.3338202) appear at nodes: 135, 199
+   64. Coordinates (51.8196678, 10.3337789) appear at nodes: 198, 200
+   65. Coordinates (51.8196105, 10.3337195) appear at nodes: 197, 201
+   66. Coordinates (51.8192951, 10.3333926) appear at nodes: 196, 202
+   67. Coordinates (51.819207, 10.3333032) appear at nodes: 195, 203
+   68. Coordinates (51.8172902, 10.3349142) appear at nodes: 32, 217
+   69. Coordinates (51.8173251, 10.3348274) appear at nodes: 216, 218
+   70. Coordinates (51.8175973, 10.3341516) appear at nodes: 215, 219
+   71. Coordinates (51.817821, 10.3335962) appear at nodes: 214, 220
+   72. Coordinates (51.8187329, 10.3345295) appear at nodes: 191, 221
+   73. Coordinates (51.8182276, 10.3358488) appear at nodes: 28, 224
+   74. Coordinates (51.819151, 10.3367303) appear at nodes: 107, 227
+
+3. Repeating Edges: 62
+   1. Edge from (51.8172541, 10.3350037) to (51.8172309, 10.3350663) repeats
+   2. Edge from (51.8167163, 10.3363436) to (51.8167749, 10.3364691) repeats
+   3. Edge from (51.8167749, 10.3364691) to (51.8168794, 10.3365697) repeats
+   4. Edge from (51.8168794, 10.3365697) to (51.8169486, 10.3366079) repeats
+   5. Edge from (51.8199671, 10.3399665) to (51.8193909, 10.3392208) repeats
+   6. Edge from (51.8193909, 10.3392208) to (51.818952, 10.338723) repeats
+   7. Edge from (51.818952, 10.338723) to (51.8188956, 10.3386591) repeats
+   8. Edge from (51.8184591, 10.3380166) to (51.8184257, 10.3380908) repeats
+   9. Edge from (51.8182506, 10.3379805) to (51.8183957, 10.3380623) repeats
+   10. Edge from (51.8183957, 10.3380623) to (51.8184257, 10.3380908) repeats
+   11. Edge from (51.817688, 10.3372195) to (51.8184591, 10.3380166) repeats
+   12. Edge from (51.8184591, 10.3380166) to (51.8185718, 10.3381309) repeats
+   13. Edge from (51.8183542, 10.3382501) to (51.8184484, 10.3383485) repeats
+   14. Edge from (51.8184484, 10.3383485) to (51.8184904, 10.3382782) repeats
+   15. Edge from (51.8184904, 10.3382782) to (51.8186668, 10.3384652) repeats
+   16. Edge from (51.8186668, 10.3384652) to (51.8187911, 10.3385814) repeats
+   17. Edge from (51.8187911, 10.3385814) to (51.8188956, 10.3386591) repeats
+   18. Edge from (51.8188956, 10.3386591) to (51.8188143, 10.3385143) repeats
+   19. Edge from (51.8188143, 10.3385143) to (51.8187115, 10.3383869) repeats
+   20. Edge from (51.8187115, 10.3383869) to (51.8185352, 10.338197) repeats
+   21. Edge from (51.8185352, 10.338197) to (51.8185718, 10.3381309) repeats
+   22. Edge from (51.8185718, 10.3381309) to (51.8187431, 10.3377178) repeats
+   23. Edge from (51.8187431, 10.3377178) to (51.8190316, 10.337022) repeats
+   24. Edge from (51.8190316, 10.337022) to (51.8190686, 10.3369329) repeats
+   25. Edge from (51.8207308, 10.3356985) to (51.8209274, 10.3351856) repeats
+   26. Edge from (51.8209274, 10.3351856) to (51.8209699, 10.3350735) repeats
+   27. Edge from (51.8201269, 10.3342467) to (51.8202588, 10.3343548) repeats
+   28. Edge from (51.8202588, 10.3343548) to (51.8204628, 10.3345608) repeats
+   29. Edge from (51.8204628, 10.3345608) to (51.8206812, 10.3347813) repeats
+   30. Edge from (51.8206335, 10.3348913) to (51.8206458, 10.3348639) repeats
+   31. Edge from (51.8206458, 10.3348639) to (51.8206549, 10.3348427) repeats
+   32. Edge from (51.8206549, 10.3348427) to (51.8206641, 10.3348228) repeats
+   33. Edge from (51.8206641, 10.3348228) to (51.8206812, 10.3347813) repeats
+   34. Edge from (51.8206812, 10.3347813) to (51.8208548, 10.334957) repeats
+   35. Edge from (51.8208548, 10.334957) to (51.8209699, 10.3350735) repeats
+   36. Edge from (51.8209699, 10.3350735) to (51.821048, 10.3351842) repeats
+   37. Edge from (51.821048, 10.3351842) to (51.821007, 10.3352996) repeats
+   38. Edge from (51.821007, 10.3352996) to (51.8208141, 10.3357817) repeats
+   39. Edge from (51.8202743, 10.3371507) to (51.8202224, 10.3370965) repeats
+   40. Edge from (51.8202224, 10.3370965) to (51.8202137, 10.3370882) repeats
+   41. Edge from (51.8202137, 10.3370882) to (51.8202046, 10.33708) repeats
+   42. Edge from (51.8202046, 10.33708) to (51.8201808, 10.3370533) repeats
+   43. Edge from (51.8205278, 10.3363829) to (51.8206078, 10.3362971) repeats
+   44. Edge from (51.8206078, 10.3362971) to (51.8208141, 10.3357817) repeats
+   45. Edge from (51.8208141, 10.3357817) to (51.8207843, 10.3357519) repeats
+   46. Edge from (51.8207843, 10.3357519) to (51.8207749, 10.3357426) repeats
+   47. Edge from (51.8207749, 10.3357426) to (51.8207649, 10.3357326) repeats
+   48. Edge from (51.8207649, 10.3357326) to (51.8207308, 10.3356985) repeats
+   49. Edge from (51.8207308, 10.3356985) to (51.8205215, 10.3362443) repeats
+   50. Edge from (51.8205215, 10.3362443) to (51.8205278, 10.3363829) repeats
+   51. Edge from (51.8205278, 10.3363829) to (51.8203312, 10.336176) repeats
+   52. Edge from (51.8203312, 10.336176) to (51.8199307, 10.3357542) repeats
+   53. Edge from (51.8199307, 10.3357542) to (51.8196628, 10.3354722) repeats
+   54. Edge from (51.8196628, 10.3354722) to (51.819442, 10.3352377) repeats
+   55. Edge from (51.819442, 10.3352377) to (51.8192455, 10.335029) repeats
+   56. Edge from (51.8197097, 10.3338202) to (51.8196678, 10.3337789) repeats
+   57. Edge from (51.8196678, 10.3337789) to (51.8196105, 10.3337195) repeats
+   58. Edge from (51.8196105, 10.3337195) to (51.8192951, 10.3333926) repeats
+   59. Edge from (51.8192951, 10.3333926) to (51.819207, 10.3333032) repeats
+   60. Edge from (51.8172902, 10.3349142) to (51.8173251, 10.3348274) repeats
+   61. Edge from (51.8173251, 10.3348274) to (51.8175973, 10.3341516) repeats
+   62. Edge from (51.8175973, 10.3341516) to (51.817821, 10.3335962) repeats
