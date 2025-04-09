@@ -54,8 +54,8 @@ var efficiencyhistory = [],
 var totalefficiencygains = 0;
 var isTouchScreenDevice = false;
 var totaluniqueroads;
-var visitedEdges;
-var visitedNodes;
+var visitedEdges = [];
+var visitedNodes = [];
 
 function setup() {
   // This code snippet initializes the values
@@ -164,7 +164,7 @@ function getOverpassData() {
     var XMLways = OSMxml.getElementsByTagName("way");
     numnodes = XMLnodes.length;
     numways = XMLways.length;
-
+    console.log("overpass numways: ", numways);
     // get min and max lats and lons from extracted nodes
     // for (let i = 0; i < numnodes; i++) {
     //   var lat = XMLnodes[i].getAttribute("lat");
@@ -188,16 +188,19 @@ function getOverpassData() {
     for (let i = 0; i < numways; i++) {
       let wayid = XMLways[i].getAttribute("id");
       let nodesinsideway = XMLways[i].getElementsByTagName("nd");
+      console.log("nodesinsideway1: ", nodesinsideway);
       for (let j = 0; j < nodesinsideway.length - 1; j++) {
-        fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
-        tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
+        let fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
+        let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
         if ((fromnode != null) & (tonode != null)) {
           let newEdge = new Edge(fromnode, tonode, wayid);
           edges.push(newEdge);
           totaledgedistance += newEdge.distance;
+          // console.log("this is the newEdge1: ", newEdge);
         }
       }
     }
+    console.log("edges", edges);
     mode = selectnodemode;
     extractEdges();
     showMessage("mode is selectnodemode");
@@ -299,6 +302,15 @@ function getNodebyId(id) {
   return null;
 }
 
+function getVisitedNodebyId(id) {
+  for (let i = 0; i < visitedNodes.length; i++) {
+    if (visitedNodes[i].nodeId == id) {
+      return visitedNodes[i];
+    }
+  }
+  return null;
+}
+
 function calcdistance(lat1, long1, lat2, long2) {
   lat1 = radians(lat1);
   long1 = radians(long1);
@@ -377,9 +389,52 @@ function gpxToOverpass(gpxCoordinates) {
     var parser = new DOMParser();
     newData = parser.parseFromString(data, "text/xml");
     console.log("newData ", newData);
-    displayGPXTrack(newData);
+    // displayGPXTrack(newData);
+    updateVisitedPaths(newData);
   }
   fetchNodeAndEdges();
+}
+
+function updateVisitedPaths(data) {
+  var XMLnodes = data.getElementsByTagName("node");
+  var XMLways = data.getElementsByTagName("way");
+  console.log("XMLwaysGPX: ", XMLways);
+  numnodes = XMLnodes.length;
+  numways = XMLways.length;
+  visitedEdges = [];
+  visitedNodes = [];
+  // console.log("numways: ", numways);
+  for (let i = 0; i < numnodes; i++) {
+    var lat = XMLnodes[i].getAttribute("lat");
+    var lon = XMLnodes[i].getAttribute("lon");
+    var nodeid = XMLnodes[i].getAttribute("id");
+    let node = new Node1(nodeid, lat, lon);
+    visitedNodes.push(node);
+  }
+  //parse ways into edges
+  for (let i = 0; i < numways; i++) {
+    let wayid = XMLways[i].getAttribute("id");
+    let nodesinsideway = XMLways[i].getElementsByTagName("nd");
+    // console.log("WayId", wayid);
+    console.log("nodesinsideway2: ", nodesinsideway);
+
+    for (let j = 0; j < nodesinsideway.length - 1; j++) {
+      let fromnode = getVisitedNodebyId(nodesinsideway[j].getAttribute("ref"));
+      let tonode = getVisitedNodebyId(
+        nodesinsideway[j + 1].getAttribute("ref")
+      );
+      console.log("fromnode: ", fromnode);
+      console.log("tonode: ", tonode);
+      if ((fromnode != null) & (tonode != null)) {
+        let newEdge = new Edge(fromnode, tonode, wayid);
+        visitedEdges.push(newEdge);
+        totaledgedistance += newEdge.distance;
+      }
+    }
+  }
+  console.log("visited_nodes: ", visitedNodes);
+  console.log("visited_edges: ", visitedEdges);
+  // displayGPXTrack(data)
 }
 
 function displayGPXTrack(data) {
