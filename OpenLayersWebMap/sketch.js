@@ -86,11 +86,15 @@ function setup() {
 
   // Load GPX files (AI Generated code)
   document.getElementById("gpxFile").addEventListener("change", function (e) {
-    let file = e.target.files[0];
-    if (file.name.endsWith(".gpx")) {
-      loadGPX(file);
-    } else {
-      alert("Please select a GPX file");
+    let files = e.target.files;
+    if (files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].name.endsWith(".gpx")) {
+          loadGPX(files[i]);
+        } else {
+          alert("please select a gpx file");
+        }
+      }
     }
   });
 }
@@ -343,8 +347,8 @@ function loadGPX(file) {
       let lon = gpxPoints[i].getAttribute("lon");
       gpxCoordinates.push([lat, lon]);
     }
-    console.log("gpxData: ", gpxData);
-    console.log("gpxcoordinates: ", gpxCoordinates);
+    // console.log("gpxData: ", gpxData);
+    // console.log("gpxcoordinates: ", gpxCoordinates);
     gpxToOverpass(gpxCoordinates);
   };
   reader.readAsText(file);
@@ -398,43 +402,129 @@ function gpxToOverpass(gpxCoordinates) {
 function updateVisitedPaths(data) {
   var XMLnodes = data.getElementsByTagName("node");
   var XMLways = data.getElementsByTagName("way");
-  console.log("XMLwaysGPX: ", XMLways);
+  // console.log("XMLwaysGPX: ", XMLways);
   numnodes = XMLnodes.length;
   numways = XMLways.length;
-  visitedEdges = [];
-  visitedNodes = [];
   // console.log("numways: ", numways);
   for (let i = 0; i < numnodes; i++) {
     var lat = XMLnodes[i].getAttribute("lat");
     var lon = XMLnodes[i].getAttribute("lon");
     var nodeid = XMLnodes[i].getAttribute("id");
-    let node = new Node1(nodeid, lat, lon);
-    visitedNodes.push(node);
+    let id = parseInt(nodeid);
+    let node = new Node1(id, lat, lon);
+    let count = 0;
+
+    //check for duplicates
+    let isDuplicateNode = false;
+    for (let i = 0; i < visitedNodes.length; i++) {
+      if (visitedNodes[i].nodeId === node.nodeId) {
+        isDuplicateNode = true;
+        break;
+      }
+    }
+    if (!isDuplicateNode) {
+      visitedNodes.push(node);
+    }
   }
   //parse ways into edges
   for (let i = 0; i < numways; i++) {
     let wayid = XMLways[i].getAttribute("id");
     let nodesinsideway = XMLways[i].getElementsByTagName("nd");
-    // console.log("WayId", wayid);
-    console.log("nodesinsideway2: ", nodesinsideway);
-
+    // let x = 0;
     for (let j = 0; j < nodesinsideway.length - 1; j++) {
       let fromnode = getVisitedNodebyId(nodesinsideway[j].getAttribute("ref"));
       let tonode = getVisitedNodebyId(
         nodesinsideway[j + 1].getAttribute("ref")
       );
-      console.log("fromnode: ", fromnode);
-      console.log("tonode: ", tonode);
+
       if ((fromnode != null) & (tonode != null)) {
         let newEdge = new Edge(fromnode, tonode, wayid);
-        visitedEdges.push(newEdge);
-        totaledgedistance += newEdge.distance;
+        // x = x + 1;
+        checkEdgeDuplicate(visitedEdges, newEdge);
+
+        // visitedEdges.push(newEdge);
+        // totaledgedistance += newEdge.distance;
+        // console.log(visitedEdges);
+        // console.log(visitedEdges[x - 1].from.nodeId);
       }
     }
   }
   console.log("visited_nodes: ", visitedNodes);
   console.log("visited_edges: ", visitedEdges);
+  const duplicates = checkDuplicates();
+  console.log(duplicates);
   // displayGPXTrack(data)
+}
+
+function checkEdgeDuplicate(visitedEdges, newEdge) {
+  let isDuplicateEdge = false;
+  for (let i = 0; i < visitedEdges.length; i++) {
+    if (visitedEdges[i].wayid === newEdge.wayid) {
+      if (
+        visitedEdges[i].from.nodeId === newEdge.from.nodeId &&
+        visitedEdges[i].to.nodeId === newEdge.to.nodeId
+      ) {
+        isDuplicateEdge = true;
+        break;
+      }
+    }
+  }
+  if (!isDuplicateEdge) {
+    visitedEdges.push(newEdge);
+    totaledgedistance += newEdge.distance;
+  }
+}
+
+function checkDuplicates() {
+  // Check for duplicate nodes
+  const nodeIds = new Set();
+  const duplicateNodes = [];
+
+  for (let i = 0; i < visitedNodes.length; i++) {
+    const nodeId = visitedNodes[i].nodeId;
+    if (nodeIds.has(nodeId)) {
+      duplicateNodes.push({
+        node: visitedNodes[i],
+        index: i,
+      });
+    } else {
+      nodeIds.add(nodeId);
+    }
+  }
+
+  // Check for duplicate edges
+  const edgeIds = new Set();
+  const duplicateEdges = [];
+
+  for (let i = 0; i < visitedEdges.length; i++) {
+    const edgeId = `${visitedEdges[i].from.nodeId}-${visitedEdges[i].to.nodeId}`;
+    if (edgeIds.has(edgeId)) {
+      duplicateEdges.push({
+        edge: visitedEdges[i],
+        index: i,
+      });
+    } else {
+      edgeIds.add(edgeId);
+    }
+  }
+
+  // Log results
+  if (duplicateNodes.length > 0) {
+    console.log("Duplicate nodes found:", duplicateNodes);
+  } else {
+    console.log("No duplicate nodes found");
+  }
+
+  if (duplicateEdges.length > 0) {
+    console.log("Duplicate edges found:", duplicateEdges);
+  } else {
+    console.log("No duplicate edges found");
+  }
+
+  return {
+    duplicateNodes,
+    duplicateEdges,
+  };
 }
 
 function displayGPXTrack(data) {
