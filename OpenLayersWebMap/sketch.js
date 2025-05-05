@@ -168,7 +168,6 @@ function getOverpassData() {
     var XMLways = OSMxml.getElementsByTagName("way");
     numnodes = XMLnodes.length;
     numways = XMLways.length;
-    console.log("overpass numways: ", numways);
     // get min and max lats and lons from extracted nodes
     // for (let i = 0; i < numnodes; i++) {
     //   var lat = XMLnodes[i].getAttribute("lat");
@@ -192,7 +191,6 @@ function getOverpassData() {
     for (let i = 0; i < numways; i++) {
       let wayid = XMLways[i].getAttribute("id");
       let nodesinsideway = XMLways[i].getElementsByTagName("nd");
-      console.log("nodesinsideway1: ", nodesinsideway);
       for (let j = 0; j < nodesinsideway.length - 1; j++) {
         let fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
         let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
@@ -200,22 +198,12 @@ function getOverpassData() {
           let newEdge = new Edge(fromnode, tonode, wayid);
           edges.push(newEdge);
           totaledgedistance += newEdge.distance;
-          // console.log("this is the newEdge1: ", newEdge);
         }
       }
     }
-    console.log("edges", edges);
     mode = selectnodemode;
-    extractEdges();
     showMessage("mode is selectnodemode");
   });
-}
-
-function extractEdges() {
-  for (let i = 0; i < numways / 2; i++) {
-    subsetEdges.push(edges[i]);
-  }
-  // console.log(subsetEdges)
 }
 
 function showMessage(msg) {
@@ -347,8 +335,6 @@ function loadGPX(file) {
       let lon = gpxPoints[i].getAttribute("lon");
       gpxCoordinates.push([lat, lon]);
     }
-    // console.log("gpxData: ", gpxData);
-    // console.log("gpxcoordinates: ", gpxCoordinates);
     gpxToOverpass(gpxCoordinates);
   };
   reader.readAsText(file);
@@ -385,14 +371,12 @@ function gpxToOverpass(gpxCoordinates) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `data=${encodeURIComponent(query)}`,
       });
-
       data = await response.text();
     } catch (error) {
       console.error("Error fetching data from Overpass API:", error);
     }
     var parser = new DOMParser();
     newData = parser.parseFromString(data, "text/xml");
-    console.log("newData ", newData);
     // displayGPXTrack(newData);
     updateVisitedPaths(newData);
   }
@@ -400,60 +384,62 @@ function gpxToOverpass(gpxCoordinates) {
 }
 
 function updateVisitedPaths(data) {
+  parseNodes(data);
+  parseEdges(data);
+  console.log("visited_nodes: ", visitedNodes);
+  console.log("visited_edges: ", visitedEdges);
+
+  // AI Generated code
+  const vectorSource = new ol.source.Vector();
+  const vectorLayer = new ol.layer.Vector({ source: vectorSource });
+  openlayersmap.addLayer(vectorLayer);
+  displayGPXTrack(visitedNodes, visitedEdges);
+}
+
+function parseNodes(data) {
   var XMLnodes = data.getElementsByTagName("node");
-  var XMLways = data.getElementsByTagName("way");
-  // console.log("XMLwaysGPX: ", XMLways);
   numnodes = XMLnodes.length;
-  numways = XMLways.length;
-  // console.log("numways: ", numways);
   for (let i = 0; i < numnodes; i++) {
     var lat = XMLnodes[i].getAttribute("lat");
     var lon = XMLnodes[i].getAttribute("lon");
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
     let node = new Node1(id, lat, lon);
-    let count = 0;
-
-    //check for duplicates
-    let isDuplicateNode = false;
-    for (let i = 0; i < visitedNodes.length; i++) {
-      if (visitedNodes[i].nodeId === node.nodeId) {
-        isDuplicateNode = true;
-        break;
-      }
-    }
-    if (!isDuplicateNode) {
-      visitedNodes.push(node);
-    }
+    checkNodeDuplicate(visitedNodes, node);
   }
+}
+
+function parseEdges(data) {
+  var XMLways = data.getElementsByTagName("way");
+  numways = XMLways.length;
   //parse ways into edges
   for (let i = 0; i < numways; i++) {
     let wayid = XMLways[i].getAttribute("id");
     let nodesinsideway = XMLways[i].getElementsByTagName("nd");
-    // let x = 0;
     for (let j = 0; j < nodesinsideway.length - 1; j++) {
       let fromnode = getVisitedNodebyId(nodesinsideway[j].getAttribute("ref"));
       let tonode = getVisitedNodebyId(
         nodesinsideway[j + 1].getAttribute("ref")
       );
-
       if ((fromnode != null) & (tonode != null)) {
         let newEdge = new Edge(fromnode, tonode, wayid);
-        // x = x + 1;
         checkEdgeDuplicate(visitedEdges, newEdge);
-
-        // visitedEdges.push(newEdge);
-        // totaledgedistance += newEdge.distance;
-        // console.log(visitedEdges);
-        // console.log(visitedEdges[x - 1].from.nodeId);
       }
     }
   }
-  console.log("visited_nodes: ", visitedNodes);
-  console.log("visited_edges: ", visitedEdges);
-  const duplicates = checkDuplicates();
-  console.log(duplicates);
-  // displayGPXTrack(data)
+}
+
+function checkNodeDuplicate(visitedNodes, node) {
+  let isDuplicateNode = false;
+  for (let i = 0; i < visitedNodes.length; i++) {
+    if (visitedNodes[i].nodeId === node.nodeId) {
+      isDuplicateNode = true;
+      break;
+    }
+  }
+  if (!isDuplicateNode) {
+    visitedNodes.push(node);
+  }
 }
 
 function checkEdgeDuplicate(visitedEdges, newEdge) {
@@ -474,6 +460,33 @@ function checkEdgeDuplicate(visitedEdges, newEdge) {
     totaledgedistance += newEdge.distance;
   }
 }
+
+// AI Generated code
+function displayGPXTrack(visitedNodes, visitedEdges) {
+  const vectorSource = new ol.source.Vector();
+  const vectorLayer = new ol.layer.Vector({ source: vectorSource });
+  openlayersmap.addLayer(vectorLayer);
+
+  visitedNodes.forEach((element) => {
+    const feature = new ol.Feature({
+      geometry: new ol.geom.Point(
+        ol.proj.fromLonLat([element.lon, element.lat])
+      ),
+    });
+    vectorSource.addFeature(feature);
+  });
+
+  visitedEdges.forEach((e) => {
+    const fromCoord = ol.proj.fromLonLat([e.from.lon, e.from.lat]);
+    const toCoord = ol.proj.fromLonLat([e.to.lon, e.to.lat]);
+    const feature = new ol.Feature({
+      geometry: new ol.geom.LineString([fromCoord, toCoord]),
+    });
+    vectorSource.addFeature(feature);
+  });
+}
+
+//This is an AI generated code to check for duplicates
 
 function checkDuplicates() {
   // Check for duplicate nodes
@@ -526,82 +539,4 @@ function checkDuplicates() {
     duplicateEdges,
   };
 }
-
-function displayGPXTrack(data) {
-  // Reads the features of the gpx data points.
-  let vectorSource = new ol.source.Vector({
-    features: new ol.format.OSMXML().readFeatures(data, {
-      dataProjection: "EPSG:4326",
-      featureProjection: "EPSG:3857",
-    }),
-  });
-  console.log("Extracted features:", vectorSource.getFeatures());
-  // Create a vector layer with blue style
-  let vectorLayer = new ol.layer.Vector({
-    source: vectorSource,
-    style: new ol.style.Style({
-      stroke: new ol.style.Stroke({
-        color: "blue",
-        width: 4,
-      }),
-    }),
-  });
-
-  // Add the layer to the map
-  openlayersmap.addLayer(vectorLayer);
-  vectorLayer.setVisible(false);
-
-  const toggleButton = document.getElementById("toggle-layer");
-  toggleButton.addEventListener("click", () => {
-    if (vectorLayer.getVisible()) {
-      console.log("if visible");
-      vectorLayer.setVisible(false);
-    } else {
-      // openlayersmap.addLayer(vectorLayer);
-      console.log("if invisible");
-      vectorLayer.setVisible(true);
-    }
-  });
-}
-
-// function displayGPXTrack(gpxData) {
-//   // Reads the features of the gpx data points.
-//   let vectorSource = new ol.source.Vector({
-//     features: new ol.format.GPX().readFeatures(gpxData, {
-//       dataProjection: "EPSG:4326",
-//       featureProjection: "EPSG:3857",
-//     }),
-//   });
-//   console.log("Extracted features:", vectorSource.getFeatures());
-//   // Create a vector layer with blue style
-//   let vectorLayer = new ol.layer.Vector({
-//     source: vectorSource,
-//     style: new ol.style.Style({
-//       stroke: new ol.style.Stroke({
-//         color: "blue",
-//         width: 4,
-//       }),
-//     }),
-//   });
-
-//   // Add the layer to the map
-//   openlayersmap.addLayer(vectorLayer);
-//   vectorLayer.setVisible(false);
-
-//   const toggleButton = document.getElementById("toggle-layer");
-//   toggleButton.addEventListener("click", () => {
-//     if (vectorLayer.getVisible()) {
-//       console.log("if visible");
-//       vectorLayer.setVisible(false);
-//     } else {
-//       // openlayersmap.addLayer(vectorLayer);
-//       console.log("if invisible");
-//       vectorLayer.setVisible(true);
-//     }
-//   });
-// }
-
 // End of AI Generated code
-
-// For later Implementation: if i want to get the bestroute in the format of the overpass API, all i simply have to do is
-// print bestroute, or save it in a variable.
