@@ -26,7 +26,7 @@ var minlat = Infinity,
 var nodes = [],
   edges = [];
 var mapminlat, mapminlon, mapmaxlat, mapmaxlon;
-var totaledgedistance = 0;
+var totalEdgeDistance = 0;
 var closestnodetomouse = -1;
 var closestedgetomouse = -1;
 var startnode, currentnode;
@@ -56,6 +56,7 @@ var isTouchScreenDevice = false;
 var totaluniqueroads;
 var visitedEdges = [];
 var visitedNodes = [];
+var totalVisitedEdgeDistance = 0;
 
 function setup() {
   // This code snippet initializes the values
@@ -127,8 +128,6 @@ function drawMask() {
   );
 }
 
-subsetEdges = [];
-
 function getOverpassData() {
   //load nodes and edge map data in XML format from OpenStreetMap via the Overpass API
   showMessage("Loading map data…");
@@ -164,43 +163,9 @@ function getOverpassData() {
     let OverpassResponse = response;
     var parser = new DOMParser();
     OSMxml = parser.parseFromString(OverpassResponse, "text/xml");
-    var XMLnodes = OSMxml.getElementsByTagName("node");
-    var XMLways = OSMxml.getElementsByTagName("way");
-    numnodes = XMLnodes.length;
-    numways = XMLways.length;
-    // get min and max lats and lons from extracted nodes
-    // for (let i = 0; i < numnodes; i++) {
-    //   var lat = XMLnodes[i].getAttribute("lat");
-    //   var lon = XMLnodes[i].getAttribute("lon");
-    //   minlat = min(minlat, lat);
-    //   maxlat = max(maxlat, lat);
-    //   minlon = min(minlon, lon);
-    //   maxlon = max(maxlon, lon);
-    // }
-
-    nodes = [];
-    edges = [];
-    for (let i = 0; i < numnodes; i++) {
-      var lat = XMLnodes[i].getAttribute("lat");
-      var lon = XMLnodes[i].getAttribute("lon");
-      var nodeid = XMLnodes[i].getAttribute("id");
-      let node = new Node1(nodeid, lat, lon);
-      nodes.push(node);
-    }
-    //parse ways into edges
-    for (let i = 0; i < numways; i++) {
-      let wayid = XMLways[i].getAttribute("id");
-      let nodesinsideway = XMLways[i].getElementsByTagName("nd");
-      for (let j = 0; j < nodesinsideway.length - 1; j++) {
-        let fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
-        let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
-        if ((fromnode != null) & (tonode != null)) {
-          let newEdge = new Edge(fromnode, tonode, wayid);
-          edges.push(newEdge);
-          totaledgedistance += newEdge.distance;
-        }
-      }
-    }
+    // parse nodes and edges
+    parseUnvisitedNodes(OSMxml);
+    parseUnvisitedEdges(OSMxml);
     mode = selectnodemode;
     showMessage("mode is selectnodemode");
   });
@@ -363,7 +328,6 @@ function gpxToOverpass(gpxCoordinates) {
   };
 
   const query = constructQuery(gpxCoordinates);
-
   async function fetchNodeAndEdges() {
     try {
       const response = await fetch(overpassEndpoint, {
@@ -384,8 +348,8 @@ function gpxToOverpass(gpxCoordinates) {
 }
 
 function updateVisitedPaths(data) {
-  parseNodes(data);
-  parseEdges(data);
+  parseVisitedNodes(data);
+  parseVisitedEdges(data);
   console.log("visited_nodes: ", visitedNodes);
   console.log("visited_edges: ", visitedEdges);
 
@@ -396,20 +360,51 @@ function updateVisitedPaths(data) {
   displayGPXTrack(visitedNodes, visitedEdges);
 }
 
-function parseNodes(data) {
+function parseVisitedNodes(data) {
   var XMLnodes = data.getElementsByTagName("node");
   numnodes = XMLnodes.length;
   for (let i = 0; i < numnodes; i++) {
     var lat = XMLnodes[i].getAttribute("lat");
-    var lon = XMLnodes[i].getAttribute("lon");
+    var lon = XMLnodes[i].getAttribuSSte("lon");
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
     let node = new Node1(id, lat, lon);
     checkNodeDuplicate(visitedNodes, node);
   }
 }
+function parseUnvisitedNodes(data) {
+  var XMLnodes = data.getElementsByTagName("node");
+  numnodes = XMLnodes.length;
+  let idSet;
+  if (visitedNodes.length > 0) {
+    idSet = buildNodeSet(visitedNodes);
+  }
+  for (let i = 0; i < numnodes; i++) {
+    var lat = XMLnodes[i].getAttribute("lat");
+    var lon = XMLnodes[i].getAttribute("lon");
+    var nodeid = XMLnodes[i].getAttribute("id");
+    let id = parseInt(nodeid);
+    let node = new Node1(id, lat, lon);
+    if (visitedNodes.length > 0) {
+      integrateNodes(node, idSet);
+    } else {
+      nodes.push(node);
+    }
+  }
+}
 
-function parseEdges(data) {
+function integrateNodes(node, idSetNodes) {
+  const exists = idSetNodes.has(node.nodeId);
+  console.log("This is integrate nodes exists: ", exists);
+}
+
+function buildNodeSet(array) {
+  const idSet = new Set(array.map((o) => o.nodeId));
+  console.log("this is build node set: ", idSet);
+  return idSet;
+}
+
+function parseVisitedEdges(data) {
   var XMLways = data.getElementsByTagName("way");
   numways = XMLways.length;
   //parse ways into edges
@@ -427,6 +422,44 @@ function parseEdges(data) {
       }
     }
   }
+}
+function parseUnvisitedEdges(data) {
+  var XMLways = data.getElementsByTagName("way");
+  numways = XMLways.length;
+  let idSet;
+  if (visitedEdges.length > 0) {
+    idSet = buildEdgeSet(visitedEdges);
+  }
+  //parse ways into edges
+  for (let i = 0; i < numways; i++) {
+    let wayid = XMLways[i].getAttribute("id");
+    let nodesinsideway = XMLways[i].getElementsByTagName("nd");
+    for (let j = 0; j < nodesinsideway.length - 1; j++) {
+      let fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
+      let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
+      if ((fromnode != null) & (tonode != null)) {
+        let newEdge = new Edge(fromnode, tonode, wayid);
+        totalEdgeDistaSnce += newEdge.distance;
+        if (visitedEdges.length > 0) {
+          integrateEdges(newEdge, idSet);
+        } else {
+          edges.push(newEdge);
+        }
+      }
+    }
+  }
+}
+// the problem lies in the integrateEdges and buildEdgeSet functions. They are not
+// accounting that some way ids are the same.S
+function integrateEdges(newEdge, idSetEdges) {
+  const exists = idSetEdges.has(newEdge.wayid);
+  console.log("This is Edges exists: ", exists);
+}
+
+function buildEdgeSet(array) {
+  const idSet = new Set(array.map((o) => o.wayid));
+  console.log("build edge set: ", idSet);
+  return idSet;
 }
 
 function checkNodeDuplicate(visitedNodes, node) {
@@ -457,7 +490,7 @@ function checkEdgeDuplicate(visitedEdges, newEdge) {
   }
   if (!isDuplicateEdge) {
     visitedEdges.push(newEdge);
-    totaledgedistance += newEdge.distance;
+    totalVisitedEdgeDistance += newEdge.distance;
   }
 }
 
