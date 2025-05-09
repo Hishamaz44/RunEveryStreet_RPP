@@ -166,6 +166,8 @@ function getOverpassData() {
     // parse nodes and edges
     parseUnvisitedNodes(OSMxml);
     parseUnvisitedEdges(OSMxml);
+    console.log("nodes: ", nodes);
+    console.log("edges: ", edges);
     mode = selectnodemode;
     showMessage("mode is selectnodemode");
   });
@@ -268,6 +270,22 @@ function getVisitedNodebyId(id) {
   return null;
 }
 
+function getNodebyIdFromBoth(id) {
+  // First check in visited nodes
+  for (let i = 0; i < visitedNodes.length; i++) {
+    if (visitedNodes[i].nodeId == id) {
+      return visitedNodes[i];
+    }
+  }
+  // Then check in unvisited nodes
+  for (let i = 0; i < nodes.length; i++) {
+    if (nodes[i].nodeId == id) {
+      return nodes[i];
+    }
+  }
+  return null;
+}
+
 function calcdistance(lat1, long1, lat2, long2) {
   lat1 = radians(lat1);
   long1 = radians(long1);
@@ -365,7 +383,7 @@ function parseVisitedNodes(data) {
   numnodes = XMLnodes.length;
   for (let i = 0; i < numnodes; i++) {
     var lat = XMLnodes[i].getAttribute("lat");
-    var lon = XMLnodes[i].getAttribuSSte("lon");
+    var lon = XMLnodes[i].getAttribute("lon");
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
     let node = new Node1(id, lat, lon);
@@ -395,7 +413,9 @@ function parseUnvisitedNodes(data) {
 
 function integrateNodes(node, idSetNodes) {
   const exists = idSetNodes.has(node.nodeId);
-  console.log("This is integrate nodes exists: ", exists);
+  if (!exists) {
+    nodes.push(node);
+  }
 }
 
 function buildNodeSet(array) {
@@ -426,40 +446,59 @@ function parseVisitedEdges(data) {
 function parseUnvisitedEdges(data) {
   var XMLways = data.getElementsByTagName("way");
   numways = XMLways.length;
-  let idSet;
-  if (visitedEdges.length > 0) {
-    idSet = buildEdgeSet(visitedEdges);
-  }
   //parse ways into edges
   for (let i = 0; i < numways; i++) {
     let wayid = XMLways[i].getAttribute("id");
     let nodesinsideway = XMLways[i].getElementsByTagName("nd");
     for (let j = 0; j < nodesinsideway.length - 1; j++) {
-      let fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
-      let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
+      let fromnode = getNodebyIdFromBoth(nodesinsideway[j].getAttribute("ref"));
+      let tonode = getNodebyIdFromBoth(
+        nodesinsideway[j + 1].getAttribute("ref")
+      );
       if ((fromnode != null) & (tonode != null)) {
         let newEdge = new Edge(fromnode, tonode, wayid);
-        totalEdgeDistaSnce += newEdge.distance;
         if (visitedEdges.length > 0) {
-          integrateEdges(newEdge, idSet);
+          integrateEdges(newEdge, visitedEdges);
         } else {
           edges.push(newEdge);
+          totalEdgeDistance += newEdge.distance;
         }
       }
     }
   }
 }
-// the problem lies in the integrateEdges and buildEdgeSet functions. They are not
-// accounting that some way ids are the same.S
-function integrateEdges(newEdge, idSetEdges) {
-  const exists = idSetEdges.has(newEdge.wayid);
-  console.log("This is Edges exists: ", exists);
-}
 
-function buildEdgeSet(array) {
-  const idSet = new Set(array.map((o) => o.wayid));
-  console.log("build edge set: ", idSet);
-  return idSet;
+function integrateEdges(newEdge, visitedEdges) {
+  let isDuplicateEdge = false;
+  const exists = visitedEdges.find((obj) => {
+    if (obj.wayid === newEdge.wayid) {
+      if (
+        (obj.from.nodeId === newEdge.from.nodeId &&
+          obj.to.nodeId === newEdge.to.nodeId) ||
+        (obj.from.nodeId === newEdge.to.nodeId &&
+          obj.to.nodeId === newEdge.from.nodeId)
+      ) {
+        isDuplicateEdge = true;
+      }
+    }
+  });
+  const existsInUnvisited = edges.find((obj) => {
+    if (obj.wayid === newEdge.wayid) {
+      if (
+        (obj.from.nodeId === newEdge.from.nodeId &&
+          obj.to.nodeId === newEdge.to.nodeId) ||
+        (obj.from.nodeId === newEdge.to.nodeId &&
+          obj.to.nodeId === newEdge.from.nodeId)
+      ) {
+        isDuplicateEdge = true;
+      }
+    }
+  });
+
+  if (!isDuplicateEdge) {
+    edges.push(newEdge);
+    totalEdgeDistance += newEdge.distance;
+  }
 }
 
 function checkNodeDuplicate(visitedNodes, node) {
@@ -519,6 +558,13 @@ function displayGPXTrack(visitedNodes, visitedEdges) {
   });
 }
 
+// function connectVisitedToUnvisited(){
+//   for (let i = 0; i < visitedEdges.length; i++) {
+//     wayid = visitedEdges[i].wayid
+//     if(visitedEdges[i].fromnode)
+//   }
+// }
+
 //This is an AI generated code to check for duplicates
 
 function checkDuplicates() {
@@ -572,4 +618,5 @@ function checkDuplicates() {
     duplicateEdges,
   };
 }
+
 // End of AI Generated code
