@@ -30,11 +30,12 @@ var totalEdgeDistance = 0;
 var closestnodetomouse = -1;
 var closestedgetomouse = -1;
 var startnode, currentnode;
-var selectnodemode = 1,
-  // solveRESmode = 2,
-  choosemapmode = 3,
-  trimmode = 4;
-// downloadGPXmode = 5;
+var choosemapmode = 1,
+  loadMapMode = 2,
+  selectnodemode = 3,
+  trimmode = 4,
+  solveRESmode = 5,
+  downloadGPXmode = 6;
 var mode;
 var remainingedges;
 var debugsteps = 0;
@@ -52,7 +53,8 @@ var starttime;
 var efficiencyhistory = [],
   distancehistory = [];
 var totalefficiencygains = 0;
-var isTouchScreenDevice = false;
+// var isTouchScreenDevice = false;
+var isTouchScreenDevice = window.matchMedia("(pointer: coarse)").matches;
 var totaluniqueroads;
 var visitedEdges = [];
 var visitedNodes = [];
@@ -102,9 +104,9 @@ function setup() {
 
 function draw() {
   //main loop that gets run while the website is running
-  if (touches.length > 0) {
-    isTouchScreenDevice = true;
-  }
+  // if (touches.length > 0) {
+  //   isTouchScreenDevice = true;
+  // }
   clear();
   drawMask();
   if (mode != choosemapmode) {
@@ -112,7 +114,64 @@ function draw() {
     if (showRoads) {
       showEdges();
     }
+    if (mode == solveRESmode) {
+      for (let it = 0; it < iterationsperframe; it++) {
+        iterations++;
+        let solutionfound = false;
+        while (!solutionfound) {
+          //run randomly down least roads until all roads have been run
+          shuffle(currentnode.edges, true);
+          currentnode.edges.sort((a, b) => a.travels - b.travels); // sort edges around node by number of times traveled, and travel down least.
+          let edgewithleasttravels = currentnode.edges[0];
+          let nextNode = edgewithleasttravels.OtherNodeofEdge(currentnode);
+          edgewithleasttravels.travels++;
+          currentroute.addWaypoint(nextNode, edgewithleasttravels.distance);
+          currentnode = nextNode;
+          if (edgewithleasttravels.travels == 1) {
+            // then first time traveled on this edge
+            remainingedges--; //fewer edges that have not been travelled
+          }
+          if (remainingedges == 0) {
+            //once all edges have been traveled, the route is complete. Work out total distance and see if this route is the best so far.
+            solutionfound = true;
+            currentroute.distance += calcdistance(
+              currentnode.lat,
+              currentnode.lon,
+              startnode.lat,
+              startnode.lon
+            );
+            if (currentroute.distance < bestdistance) {
+              // this latest route is now record
+              bestroute = new Route(null, currentroute);
+              bestdistance = currentroute.distance;
+              if (efficiencyhistory.length > 1) {
+                totalefficiencygains +=
+                  totalEdgeDistance / bestroute.distance -
+                  efficiencyhistory[efficiencyhistory.length - 1];
+              }
+              efficiencyhistory.push(totalEdgeDistance / bestroute.distance);
+              distancehistory.push(bestroute.distance);
+            }
+            currentnode = startnode;
+            remainingedges = edges.length;
+            currentroute = new Route(currentnode, null);
+            resetEdges();
+          }
+        }
+      }
+    }
+    showNodes();
+    if (bestroute != null) {
+      bestroute.show();
+    }
+    if (mode == solveRESmode) {
+      drawProgressGraph();
+    }
+    if (mode == downloadGPXmode) {
+      showReportOut();
+    }
   }
+  // console.log(mode);
 }
 
 function drawMask() {
@@ -169,7 +228,7 @@ function getOverpassData() {
     console.log("nodes: ", nodes);
     console.log("edges: ", edges);
     mode = selectnodemode;
-    showMessage("mode is selectnodemode");
+    console.log("code just now went into selectnodemode");
   });
 }
 
@@ -243,10 +302,54 @@ function mousePressed() {
   ) {
     // Was in Choose map mode and clicked on button
     getOverpassData(); // gets road data from framed area on map
-    mode = selectnodemode;
+    mode = loadMapMode;
     return;
   }
+  if (mode == selectnodemode && mouseY < mapHeight) {
+    // Select node mode, and clicked on map
+    showNodes();
+    showMessage("Click on roads to trim, then click here");
+    removeOrphans();
+    mode = trimmode;
+    return;
+  }
+
+  if (mode == trimmode) {
+    showEdges(); // find closest edge
+    if (
+      mouseY < btnBRy &&
+      mouseY > btnTLy &&
+      mouseX > btnTLx &&
+      mouseX < btnBRx
+    ) {
+      // clicked on button
+      mode = solveRESmode;
+      showMessage("Calculating… Click to stop when satisfied");
+      console.log("mode is equal to: ", mode);
+      showNodes(); // recalculate closest node
+      solveRES();
+      return;
+    } else {
+      // clicked on edge to remove it
+      trimSelectedEdge();
+      console.log("nodes: ", nodes);
+      console.log("edges: ", edges);
+    }
+  }
 }
+
+function solveRES() {
+  removeOrphans();
+  showRoads = false;
+  remainingedges = edges.length;
+  currentroute = new Route(currentnode, null);
+  bestroute = new Route(currentnode, null);
+  bestdistance = Infinity;
+  iterations = 0;
+  iterationsperframe = 1;
+  starttime = millis();
+}
+
 function hideMessage() {
   msgbckDiv.remove();
   msgDiv.remove();
@@ -301,6 +404,96 @@ function calcdistance(lat1, long1, lat2, long2) {
     ) *
     6371.0
   );
+}
+// this is a section to add all the remaining runEveryStreet code
+function showNodes() {
+  let closestnodetomousedist = Infinity;
+
+  for (let i = 0; i < nodes.length; i++) {
+    if (showRoads) {
+      nodes[i].show();
+    }
+    if (mode == selectnodemode) {
+      disttoMouse = dist(nodes[i].x, nodes[i].y, mouseX, mouseY);
+      // console.log("distancetomouse", disttoMouse);
+      if (disttoMouse < closestnodetomousedist) {
+        closestnodetomousedist = disttoMouse;
+        closestnodetomouse = i;
+      }
+    }
+  }
+  if (mode == selectnodemode) {
+    startnode = nodes[closestnodetomouse];
+    console.log("closestnodetomousedist: ", closestnodetomousedist);
+    console.log("closestnodetomouse: ", closestnodetomouse);
+    console.log("startnode: ", startnode);
+  }
+  if (startnode != null && (!isTouchScreenDevice || mode != selectnodemode)) {
+    startnode.highlight();
+  }
+}
+
+function removeOrphans() {
+  // remove unreachable nodes and edges
+  resetEdges();
+  if (startnode) {
+    currentnode = startnode;
+  }
+  floodfill(currentnode, 1); // recursively walk every unwalked route until all connected nodes have been reached at least once, then remove unwalked ones.
+  let newedges = [];
+  let newnodes = [];
+  totalEdgeDistance = 0;
+  for (let i = 0; i < edges.length; i++) {
+    if (edges[i].travels > 0) {
+      newedges.push(edges[i]);
+      totalEdgeDistance += edges[i].distance;
+      if (!newnodes.includes(edges[i].from)) {
+        newnodes.push(edges[i].from);
+      }
+      if (!newnodes.includes(edges[i].to)) {
+        newnodes.push(edges[i].to);
+      }
+    }
+  }
+  edges = newedges;
+  nodes = newnodes;
+  resetEdges();
+}
+
+function floodfill(node, stepssofar) {
+  for (let i = 0; i < node.edges.length; i++) {
+    if (node.edges[i].travels == 0) {
+      node.edges[i].travels = stepssofar;
+      floodfill(node.edges[i].OtherNodeofEdge(node), stepssofar + 1);
+    }
+  }
+}
+
+function resetEdges() {
+  for (let i = 0; i < edges.length; i++) {
+    edges[i].travels = 0;
+  }
+}
+
+function trimSelectedEdge() {
+  if (closestedgetomouse >= 0) {
+    let edgetodelete = edges[closestedgetomouse];
+    edges.splice(
+      edges.findIndex((element) => element == edgetodelete),
+      1
+    );
+    for (let i = 0; i < nodes.length; i++) {
+      // remove references to the deleted edge from within each of the nodes
+      if (nodes[i].edges.includes(edgetodelete)) {
+        nodes[i].edges.splice(
+          nodes[i].edges.findIndex((element) => element == edgetodelete),
+          1
+        );
+      }
+    }
+    removeOrphans(); // deletes parts of the network that no longer can be reached.
+    closestedgetomouse = -1;
+  }
 }
 
 // AI generated code
@@ -400,6 +593,10 @@ function parseUnvisitedNodes(data) {
   for (let i = 0; i < numnodes; i++) {
     var lat = XMLnodes[i].getAttribute("lat");
     var lon = XMLnodes[i].getAttribute("lon");
+    minlat = min(minlat, lat);
+    maxlat = max(maxlat, lat);
+    minlon = min(minlon, lon);
+    maxlon = max(maxlon, lon);
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
     let node = new Node1(id, lat, lon);
@@ -470,7 +667,7 @@ function parseUnvisitedEdges(data) {
 
 function integrateEdges(newEdge, visitedEdges) {
   let isDuplicateEdge = false;
-  const exists = visitedEdges.find((obj) => {
+  const existsInVisited = visitedEdges.find((obj) => {
     if (obj.wayid === newEdge.wayid) {
       if (
         (obj.from.nodeId === newEdge.from.nodeId &&
@@ -620,3 +817,68 @@ function checkDuplicates() {
 }
 
 // End of AI Generated code
+
+function positionMap(minlon_, minlat_, maxlon_, maxlat_) {
+  extent = [minlon_, minlat_, maxlon_, maxlat_];
+  //try to fit the map to these coordinates
+  openlayersmap
+    .getView()
+    .fit(
+      ol.proj.transformExtent(extent, "EPSG:4326", "EPSG:3857"),
+      openlayersmap.getSize()
+    );
+  //capture the exact coverage of the map after fitting
+  var extent = ol.proj.transformExtent(
+    openlayersmap.getView().calculateExtent(openlayersmap.getSize()),
+    "EPSG:3857",
+    "EPSG:4326"
+  );
+  mapminlat = extent[1];
+  mapminlon = extent[0];
+  mapmaxlat = extent[3];
+  mapmaxlon = extent[2];
+}
+
+function drawProgressGraph() {
+  if (efficiencyhistory.length > 0) {
+    noStroke();
+    fill(0, 0, 0, 0.3);
+    let graphHeight = 100;
+    rect(0, height - graphHeight, windowWidth, graphHeight);
+    fill(0, 5, 225, 255);
+    textAlign(LEFT);
+    textSize(12);
+    text(
+      "Routes tried: " +
+        iterations.toLocaleString() +
+        ", Length of all roads: " +
+        nf(totalEdgeDistance, 0, 1) +
+        "km, Best route: " +
+        nf(bestroute.distance, 0, 1) +
+        "km (" +
+        round(efficiencyhistory[efficiencyhistory.length - 1] * 100) +
+        "%)",
+      15,
+      height - graphHeight + 18
+    );
+    textAlign(CENTER);
+    textSize(12);
+    for (let i = 0; i < efficiencyhistory.length; i++) {
+      fill((i * 128) / efficiencyhistory.length, 255, 205, 1);
+      let startx = map(i, 0, efficiencyhistory.length, 0, windowWidth);
+      let starty = height - graphHeight * efficiencyhistory[i];
+      rect(
+        startx,
+        starty,
+        windowWidth / efficiencyhistory.length,
+        graphHeight * efficiencyhistory[i]
+      );
+      fill(0, 5, 0);
+      text(
+        round(distancehistory[i]) + "km",
+        startx + windowWidth / efficiencyhistory.length / 2,
+        height - 5
+      );
+    }
+  }
+}
