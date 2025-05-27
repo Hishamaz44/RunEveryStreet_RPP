@@ -1,0 +1,19 @@
+<gpx xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <type>9</type>
+    <trkseg>
+      <trkpt lat="51.819807" lon="10.335103">
+        <ele>0</ele>
+        <time>2025-05-27T12:00:00Z</time>
+      </trkpt>
+      <trkpt lat="51.81937" lon="10.336202">
+        <ele>0</ele>
+        <time>2025-05-27T12:00:00Z</time>
+      </trkpt>
+      <trkpt lat="51.820284" lon="10.333904">
+        <ele>0</ele>
+        <time>2025-05-27T12:00:00Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

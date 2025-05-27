@@ -1,25 +1,27 @@
 class Node1 {
-	constructor(nodeId_, lat_, lon_) {
-		this.nodeId = nodeId_;
-		this.lat = lat_;
-		this.lon = lon_;
-		this.pos = createVector(1, 1);
-		this.x = map(this.lon, mapminlon, mapmaxlon, 0, mapWidth);
-		this.y = map(this.lat, mapminlat, mapmaxlat, mapHeight, 0);
-		this.edges = [];
-	}
+  constructor(nodeId_, lat_, lon_) {
+    this.nodeId = nodeId_;
+    this.lat = lat_;
+    this.lon = lon_;
+    this.pos = createVector(1, 1);
+    this.x = map(this.lon, mapminlon, mapmaxlon, 0, mapWidth);
+    this.y = map(this.lat, mapminlat, mapmaxlat, mapHeight, 0);
+    this.edges = [];
+    this.visited = false;
+    this.visitedOriginal = false;
+  }
 
-	show() {
-		noStroke();
-		colorMode(HSB);
-		fill(0, 255, 255, 100);
-		ellipse(this.x, this.y, 2);
-	}
+  show() {
+    noStroke();
+    colorMode(HSB);
+    fill(170, 255, 255, 100);
+    ellipse(this.x, this.y, 4);
+  }
 
-	highlight() {
-		noStroke();
-		colorMode(HSB);
-		fill(0, 255, 255, 0.5);
-		ellipse(this.x, this.y, 15);
-	}
+  highlight() {
+    noStroke();
+    colorMode(HSB);
+    fill(0, 255, 255, 0.5);
+    ellipse(this.x, this.y, 15);
+  }
 }

@@ -109,6 +109,7 @@ function draw() {
   // }
   clear();
   drawMask();
+
   if (mode != choosemapmode) {
     // choosemapmode is the first mode (choosing a frame from the map)
     if (showRoads) {
@@ -121,16 +122,23 @@ function draw() {
         while (!solutionfound) {
           //run randomly down least roads until all roads have been run
           shuffle(currentnode.edges, true);
-          currentnode.edges.sort((a, b) => a.travels - b.travels); // sort edges around node by number of times traveled, and travel down least.
+          // sort edges around node by whether its visited or not, and then number of times traveled, and travel down least.
+          currentnode.edges.sort((a, b) => {
+            if (a.visited !== b.visited) return a.visited - b.visited;
+            return a.travels - b.travels;
+          });
           let edgewithleasttravels = currentnode.edges[0];
           let nextNode = edgewithleasttravels.OtherNodeofEdge(currentnode);
           edgewithleasttravels.travels++;
+          if (
+            !edgewithleasttravels.visited &&
+            edgewithleasttravels.travels == 1
+          ) {
+            edgewithleasttravels.visited = true;
+            remainingedges--;
+          }
           currentroute.addWaypoint(nextNode, edgewithleasttravels.distance);
           currentnode = nextNode;
-          if (edgewithleasttravels.travels == 1) {
-            // then first time traveled on this edge
-            remainingedges--; //fewer edges that have not been travelled
-          }
           if (remainingedges == 0) {
             //once all edges have been traveled, the route is complete. Work out total distance and see if this route is the best so far.
             solutionfound = true;
@@ -143,6 +151,7 @@ function draw() {
             if (currentroute.distance < bestdistance) {
               // this latest route is now record
               bestroute = new Route(null, currentroute);
+              console.log("bestroute: ", bestroute);
               bestdistance = currentroute.distance;
               if (efficiencyhistory.length > 1) {
                 totalefficiencygains +=
@@ -153,7 +162,7 @@ function draw() {
               distancehistory.push(bestroute.distance);
             }
             currentnode = startnode;
-            remainingedges = edges.length;
+            remainingedges = edges.filter((e) => !e.visitedOriginal).length;
             currentroute = new Route(currentnode, null);
             resetEdges();
           }
@@ -171,7 +180,9 @@ function draw() {
       showReportOut();
     }
   }
-  // console.log(mode);
+  // showNodes();
+  // showEdges();
+  console.log(mode);
 }
 
 function drawMask() {
@@ -227,6 +238,10 @@ function getOverpassData() {
     parseUnvisitedEdges(OSMxml);
     console.log("nodes: ", nodes);
     console.log("edges: ", edges);
+    nodes.forEach((node) => {
+      node.x = map(node.lon, mapminlon, mapmaxlon, 0, mapWidth);
+      node.y = map(node.lat, mapminlat, mapmaxlat, mapHeight, 0);
+    });
     mode = selectnodemode;
     console.log("code just now went into selectnodemode");
   });
@@ -277,7 +292,9 @@ function showMessage(msg) {
 function showEdges() {
   let closestedgetomousedist = Infinity;
   for (let i = 0; i < edges.length; i++) {
-    edges[i].show();
+    if (!edges[i].visited) {
+      edges[i].show();
+    }
     if (mode == trimmode) {
       let dist = edges[i].distanceToPoint(mouseX, mouseY);
       if (dist < closestedgetomousedist) {
@@ -341,7 +358,7 @@ function mousePressed() {
 function solveRES() {
   removeOrphans();
   showRoads = false;
-  remainingedges = edges.length;
+  remainingedges = edges.filter((e) => !e.visitedOriginal).length;
   currentroute = new Route(currentnode, null);
   bestroute = new Route(currentnode, null);
   bestdistance = Infinity;
@@ -356,31 +373,6 @@ function hideMessage() {
 }
 
 function getNodebyId(id) {
-  for (let i = 0; i < nodes.length; i++) {
-    if (nodes[i].nodeId == id) {
-      return nodes[i];
-    }
-  }
-  return null;
-}
-
-function getVisitedNodebyId(id) {
-  for (let i = 0; i < visitedNodes.length; i++) {
-    if (visitedNodes[i].nodeId == id) {
-      return visitedNodes[i];
-    }
-  }
-  return null;
-}
-
-function getNodebyIdFromBoth(id) {
-  // First check in visited nodes
-  for (let i = 0; i < visitedNodes.length; i++) {
-    if (visitedNodes[i].nodeId == id) {
-      return visitedNodes[i];
-    }
-  }
-  // Then check in unvisited nodes
   for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].nodeId == id) {
       return nodes[i];
@@ -424,9 +416,9 @@ function showNodes() {
   }
   if (mode == selectnodemode) {
     startnode = nodes[closestnodetomouse];
-    console.log("closestnodetomousedist: ", closestnodetomousedist);
-    console.log("closestnodetomouse: ", closestnodetomouse);
-    console.log("startnode: ", startnode);
+    // console.log("closestnodetomousedist: ", closestnodetomousedist);
+    // console.log("closestnodetomouse: ", closestnodetomouse);
+    // console.log("startnode: ", startnode);
   }
   if (startnode != null && (!isTouchScreenDevice || mode != selectnodemode)) {
     startnode.highlight();
@@ -472,6 +464,7 @@ function floodfill(node, stepssofar) {
 function resetEdges() {
   for (let i = 0; i < edges.length; i++) {
     edges[i].travels = 0;
+    edges[i].visited = edges[i].visitedOriginal;
   }
 }
 
@@ -561,35 +554,44 @@ function gpxToOverpass(gpxCoordinates) {
 function updateVisitedPaths(data) {
   parseVisitedNodes(data);
   parseVisitedEdges(data);
-  console.log("visited_nodes: ", visitedNodes);
-  console.log("visited_edges: ", visitedEdges);
-
+  console.log("nodes: ", nodes);
+  console.log("edges: ", edges);
   // AI Generated code
   const vectorSource = new ol.source.Vector();
   const vectorLayer = new ol.layer.Vector({ source: vectorSource });
   openlayersmap.addLayer(vectorLayer);
-  displayGPXTrack(visitedNodes, visitedEdges);
+  displayGPXTrack(nodes, edges);
 }
 
 function parseVisitedNodes(data) {
   var XMLnodes = data.getElementsByTagName("node");
   numnodes = XMLnodes.length;
+
+  for (let i = 0; i < numnodes; i++) {
+    var lat = parseFloat(XMLnodes[i].getAttribute("lat"));
+    var lon = parseFloat(XMLnodes[i].getAttribute("lon"));
+    minlat = Math.min(minlat, lat);
+    maxlat = Math.max(maxlat, lat);
+    minlon = Math.min(minlon, lon);
+    maxlon = Math.max(maxlon, lon);
+  }
+
+  // positionMap(minlon, minlat, maxlon, maxlat);
+
   for (let i = 0; i < numnodes; i++) {
     var lat = XMLnodes[i].getAttribute("lat");
     var lon = XMLnodes[i].getAttribute("lon");
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
     let node = new Node1(id, lat, lon);
-    checkNodeDuplicate(visitedNodes, node);
+    node.visited = true;
+    node.visitedOriginal = true;
+    checkNodeDuplicate(nodes, node);
   }
 }
 function parseUnvisitedNodes(data) {
   var XMLnodes = data.getElementsByTagName("node");
   numnodes = XMLnodes.length;
-  let idSet;
-  if (visitedNodes.length > 0) {
-    idSet = buildNodeSet(visitedNodes);
-  }
   for (let i = 0; i < numnodes; i++) {
     var lat = XMLnodes[i].getAttribute("lat");
     var lon = XMLnodes[i].getAttribute("lon");
@@ -600,25 +602,8 @@ function parseUnvisitedNodes(data) {
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
     let node = new Node1(id, lat, lon);
-    if (visitedNodes.length > 0) {
-      integrateNodes(node, idSet);
-    } else {
-      nodes.push(node);
-    }
+    checkNodeDuplicate(nodes, node);
   }
-}
-
-function integrateNodes(node, idSetNodes) {
-  const exists = idSetNodes.has(node.nodeId);
-  if (!exists) {
-    nodes.push(node);
-  }
-}
-
-function buildNodeSet(array) {
-  const idSet = new Set(array.map((o) => o.nodeId));
-  console.log("this is build node set: ", idSet);
-  return idSet;
 }
 
 function parseVisitedEdges(data) {
@@ -629,13 +614,13 @@ function parseVisitedEdges(data) {
     let wayid = XMLways[i].getAttribute("id");
     let nodesinsideway = XMLways[i].getElementsByTagName("nd");
     for (let j = 0; j < nodesinsideway.length - 1; j++) {
-      let fromnode = getVisitedNodebyId(nodesinsideway[j].getAttribute("ref"));
-      let tonode = getVisitedNodebyId(
-        nodesinsideway[j + 1].getAttribute("ref")
-      );
+      let fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
+      let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
       if ((fromnode != null) & (tonode != null)) {
         let newEdge = new Edge(fromnode, tonode, wayid);
-        checkEdgeDuplicate(visitedEdges, newEdge);
+        newEdge.visited = true;
+        newEdge.visitedOriginal = true;
+        checkEdgeDuplicate(edges, newEdge);
       }
     }
   }
@@ -648,26 +633,20 @@ function parseUnvisitedEdges(data) {
     let wayid = XMLways[i].getAttribute("id");
     let nodesinsideway = XMLways[i].getElementsByTagName("nd");
     for (let j = 0; j < nodesinsideway.length - 1; j++) {
-      let fromnode = getNodebyIdFromBoth(nodesinsideway[j].getAttribute("ref"));
-      let tonode = getNodebyIdFromBoth(
-        nodesinsideway[j + 1].getAttribute("ref")
-      );
+      let fromnode = getNodebyId(nodesinsideway[j].getAttribute("ref"));
+      let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
       if ((fromnode != null) & (tonode != null)) {
         let newEdge = new Edge(fromnode, tonode, wayid);
-        if (visitedEdges.length > 0) {
-          integrateEdges(newEdge, visitedEdges);
-        } else {
-          edges.push(newEdge);
-          totalEdgeDistance += newEdge.distance;
-        }
+        integrateEdges(newEdge);
       }
     }
   }
 }
 
-function integrateEdges(newEdge, visitedEdges) {
+function integrateEdges(newEdge) {
   let isDuplicateEdge = false;
-  const existsInVisited = visitedEdges.find((obj) => {
+
+  const existingEdge = edges.find((obj) => {
     if (obj.wayid === newEdge.wayid) {
       if (
         (obj.from.nodeId === newEdge.from.nodeId &&
@@ -676,20 +655,14 @@ function integrateEdges(newEdge, visitedEdges) {
           obj.to.nodeId === newEdge.from.nodeId)
       ) {
         isDuplicateEdge = true;
+        if (!obj.visited && newEdge.visited) {
+          obj.visited = true;
+          obj.visitedOriginal = true;
+        }
+        return true;
       }
     }
-  });
-  const existsInUnvisited = edges.find((obj) => {
-    if (obj.wayid === newEdge.wayid) {
-      if (
-        (obj.from.nodeId === newEdge.from.nodeId &&
-          obj.to.nodeId === newEdge.to.nodeId) ||
-        (obj.from.nodeId === newEdge.to.nodeId &&
-          obj.to.nodeId === newEdge.from.nodeId)
-      ) {
-        isDuplicateEdge = true;
-      }
-    }
+    return false;
   });
 
   if (!isDuplicateEdge) {
@@ -698,26 +671,26 @@ function integrateEdges(newEdge, visitedEdges) {
   }
 }
 
-function checkNodeDuplicate(visitedNodes, node) {
+function checkNodeDuplicate(nodes, node) {
   let isDuplicateNode = false;
-  for (let i = 0; i < visitedNodes.length; i++) {
-    if (visitedNodes[i].nodeId === node.nodeId) {
+  for (let i = 0; i < nodes.length; i++) {
+    if (nodes[i].nodeId === node.nodeId) {
       isDuplicateNode = true;
       break;
     }
   }
   if (!isDuplicateNode) {
-    visitedNodes.push(node);
+    nodes.push(node);
   }
 }
 
-function checkEdgeDuplicate(visitedEdges, newEdge) {
+function checkEdgeDuplicate(edges, newEdge) {
   let isDuplicateEdge = false;
-  for (let i = 0; i < visitedEdges.length; i++) {
-    if (visitedEdges[i].wayid === newEdge.wayid) {
+  for (let i = 0; i < edges.length; i++) {
+    if (edges[i].wayid === newEdge.wayid) {
       if (
-        visitedEdges[i].from.nodeId === newEdge.from.nodeId &&
-        visitedEdges[i].to.nodeId === newEdge.to.nodeId
+        edges[i].from.nodeId === newEdge.from.nodeId &&
+        edges[i].to.nodeId === newEdge.to.nodeId
       ) {
         isDuplicateEdge = true;
         break;
@@ -725,42 +698,60 @@ function checkEdgeDuplicate(visitedEdges, newEdge) {
     }
   }
   if (!isDuplicateEdge) {
-    visitedEdges.push(newEdge);
+    edges.push(newEdge);
     totalVisitedEdgeDistance += newEdge.distance;
   }
 }
 
 // AI Generated code
+
 function displayGPXTrack(visitedNodes, visitedEdges) {
   const vectorSource = new ol.source.Vector();
   const vectorLayer = new ol.layer.Vector({ source: vectorSource });
   openlayersmap.addLayer(vectorLayer);
 
-  visitedNodes.forEach((element) => {
-    const feature = new ol.Feature({
-      geometry: new ol.geom.Point(
-        ol.proj.fromLonLat([element.lon, element.lat])
-      ),
-    });
-    vectorSource.addFeature(feature);
+  // Only show nodes that are connected to visited edges
+  const nodesWithVisitedEdges = new Set();
+  visitedEdges.forEach((e) => {
+    if (e.visited) {
+      nodesWithVisitedEdges.add(e.from.nodeId);
+      nodesWithVisitedEdges.add(e.to.nodeId);
+    }
   });
 
+  // Only add nodes that are part of visited edges
+  visitedNodes.forEach((node) => {
+    if (nodesWithVisitedEdges.has(node.nodeId)) {
+      const feature = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([node.lon, node.lat])),
+      });
+      vectorSource.addFeature(feature);
+    }
+  });
+
+  // Only show edges that are marked as visited
   visitedEdges.forEach((e) => {
-    const fromCoord = ol.proj.fromLonLat([e.from.lon, e.from.lat]);
-    const toCoord = ol.proj.fromLonLat([e.to.lon, e.to.lat]);
-    const feature = new ol.Feature({
-      geometry: new ol.geom.LineString([fromCoord, toCoord]),
-    });
-    vectorSource.addFeature(feature);
+    if (e.visited) {
+      const fromCoord = ol.proj.fromLonLat([e.from.lon, e.from.lat]);
+      const toCoord = ol.proj.fromLonLat([e.to.lon, e.to.lat]);
+      const feature = new ol.Feature({
+        geometry: new ol.geom.LineString([fromCoord, toCoord]),
+      });
+
+      // Optional: You can style visited edges differently
+      feature.setStyle(
+        new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: "blue",
+            width: 3,
+          }),
+        })
+      );
+
+      vectorSource.addFeature(feature);
+    }
   });
 }
-
-// function connectVisitedToUnvisited(){
-//   for (let i = 0; i < visitedEdges.length; i++) {
-//     wayid = visitedEdges[i].wayid
-//     if(visitedEdges[i].fromnode)
-//   }
-// }
 
 //This is an AI generated code to check for duplicates
 

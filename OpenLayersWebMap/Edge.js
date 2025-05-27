@@ -5,18 +5,40 @@ class Edge {
     this.from = from_;
     this.to = to_;
     this.travels = 0;
+    this.visited = false;
+    this.visitedOriginal = false;
     this.distance = calcdistance(
       this.from.lat,
       this.from.lon,
       this.to.lat,
       this.to.lon
     );
-    if (!this.from.edges.includes(this)) {
-      this.from.edges.push(this);
-    }
-    if (!this.to.edges.includes(this)) {
-      this.to.edges.push(this);
-    }
+    // if (!this.from.edges.includes(this)) {
+    //   this.from.edges.push(this);
+    // }
+    // if (!this.to.edges.includes(this)) {
+    //   this.to.edges.push(this);
+    // }
+
+    // New method to check and add edges to nodes
+    const addToNodeIfNotExists = (node) => {
+      const existingEdgeIndex = node.edges.findIndex(
+        (e) =>
+          e.wayid === this.wayid &&
+          // Check both directions
+          ((e.from.nodeId === this.from.nodeId &&
+            e.to.nodeId === this.to.nodeId) ||
+            (e.from.nodeId === this.to.nodeId &&
+              e.to.nodeId === this.from.nodeId))
+      );
+      if (existingEdgeIndex === -1) {
+        node.edges.push(this);
+      }
+    };
+
+    // Add to both nodes if not already present
+    addToNodeIfNotExists(this.from);
+    addToNodeIfNotExists(this.to);
   }
 
   // show() {
