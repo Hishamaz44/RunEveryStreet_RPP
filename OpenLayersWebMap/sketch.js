@@ -513,22 +513,29 @@ function gpxToOverpass(gpxCoordinates) {
   let overpassEndpoint = "https://overpass-api.de/api/interpreter?data=";
   let data;
   const constructQuery = (gpxCoordinates) => {
-    let nodeQueries = gpxCoordinates.map(
-      ([lat, lon]) => `node(around:0.1,${lat},${lon});`
-    );
+    // 1. Flatten GPX into a polyline string
+    const lineCoords = gpxCoordinates
+      .map(([lat, lon]) => `${lat},${lon}`)
+      .join(",");
+
     return `
-		[out:xml];
-		(${nodeQueries.join("\n")});
-		out body;
-		(
-      way(bn)['highway']
-        ['highway' !~ 'trunk|motorway|motorway_link|raceway|proposed|construction|service|elevator']
-        ['footway' !~ 'crossing|sidewalk']
-        ['foot' !~ 'no']
-        ['access' !~ 'private|no'];
-    );
-		out body;
-	`;
+      [out:xml][timeout:25];
+
+      (
+        node(around:10,${lineCoords});
+      );
+      out body;
+
+      (
+        way(bn)["highway"]
+          ["highway" !~ "trunk|motorway|motorway_link|raceway|proposed|construction|service|elevator"]
+          ["footway" !~ "crossing|sidewalk"]
+          ["foot" !~ "no"]
+          ["access" !~ "private|no"];
+      );
+      
+      out body;
+    `;
   };
 
   const query = constructQuery(gpxCoordinates);
@@ -545,6 +552,7 @@ function gpxToOverpass(gpxCoordinates) {
     }
     var parser = new DOMParser();
     newData = parser.parseFromString(data, "text/xml");
+    console.log("newData: ", newData);
     // displayGPXTrack(newData);
     updateVisitedPaths(newData);
   }
@@ -554,6 +562,7 @@ function gpxToOverpass(gpxCoordinates) {
 function updateVisitedPaths(data) {
   parseVisitedNodes(data);
   parseVisitedEdges(data);
+  nodes = removeUnnecesarryNodes(nodes);
   console.log("nodes: ", nodes);
   console.log("edges: ", edges);
   // AI Generated code
@@ -588,6 +597,17 @@ function parseVisitedNodes(data) {
     node.visitedOriginal = true;
     checkNodeDuplicate(nodes, node);
   }
+}
+
+function removeUnnecesarryNodes(nodes) {
+  //This function removes nodes that are not connected to any edges
+  let newNodes = [];
+  for (let i = 0; i < nodes.length; i++) {
+    if (nodes[i].edges.length > 0) {
+      newNodes.push(nodes[i]);
+    }
+  }
+  return newNodes;
 }
 function parseUnvisitedNodes(data) {
   var XMLnodes = data.getElementsByTagName("node");
