@@ -12,6 +12,10 @@
 	<script src="libraries/p5.sound.js"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/css/ol.css" type="text/css">
 	<!--script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js"></script>-->
+	<script src="https://cdn.jsdelivr.net/npm/graphlib@2.1.8/dist/graphlib.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-graph-algorithms@1.5.9/dist/graph-algorithms.min.js"></script>
+
+
 	<script src="https://cdn.jsdelivr.net/npm/ol@v7.1.0/dist/ol.js"></script>
     <style>
       .map {
@@ -71,9 +75,13 @@
 	</div>
 	<div id="map" class="map"></div>
 	<input type="file" id="gpxFile" accept=".gpx" multiple style="position:fixed;top:60px;right:10px;z-index:1000;">
-	<script src="sketch.js"></script>
+
+	<!-- Load your modules -->
+	<script type="module" src="graphConverter.js"></script>
+	<script type="module" src="graphologyConverter.js"></script>
 	<script src="Edge.js"></script>
 	<script src="Node1.js"></script>
 	<script src="Route.js"></script>
+	<script src="sketch.js"></script>
 </body>
 </html>
