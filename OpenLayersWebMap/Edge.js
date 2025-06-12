@@ -41,22 +41,6 @@ class Edge {
     addToNodeIfNotExists(this.to);
   }
 
-  // show() {
-  // 	strokeWeight(min(10, (this.travels + 1) * 2));
-  // 	stroke(55, 255, 255, 0.8);
-  // 	line(this.from.x, this.from.y, this.to.x, this.to.y);
-  // 	fill(0);
-  // 	// noStroke();
-  // 	if (this.hovered){
-  // 		strokeWeight(4); // Thicker line when hovered
-  // 		stroke(0, 255, 255, 0.8);
-  // 	}
-  // 	else if(this.selected){
-  // 		strokeWeight(5);
-  // 		stroke(100, 255, 255, 0.8);
-  // 	}
-  // }
-
   show() {
     // Map the coordinates from lat/lon to screen coordinates
     let x1 = map(this.from.lon, mapminlon, mapmaxlon, 0, mapWidth);
