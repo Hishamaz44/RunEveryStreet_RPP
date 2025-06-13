@@ -2,6 +2,7 @@
 This class contains functions that converts the uploaded gpx file into an
 OSM object, which is then parsed to properly fit our use case.
 */
+import { createGraph2 } from "../libraries/graphologyConverter.js";
 
 // converts the gpx coordinates to an OSM file.
 function gpxToOverpass(gpxCoordinates) {
@@ -54,7 +55,7 @@ function gpxToOverpass(gpxCoordinates) {
     console.log("nodes: ", nodes);
     console.log("edges: ", edges);
     displayGPXTrack(nodes, edges);
-    // checkDuplicates();
+    graphologyGraph = createGraph2(nodes, edges);
   }
   fetchNodeAndEdges();
 }

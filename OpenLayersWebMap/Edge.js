@@ -7,6 +7,7 @@ class Edge {
     this.travels = 0;
     this.visited = false;
     this.visitedOriginal = false;
+    this.augmentedEdge = false;
     this.distance = calcdistance(
       this.from.lat,
       this.from.lon,
@@ -22,17 +23,19 @@ class Edge {
 
     // New method to check and add edges to nodes
     const addToNodeIfNotExists = (node) => {
-      const existingEdgeIndex = node.edges.findIndex(
-        (e) =>
-          e.wayid === this.wayid &&
-          // Check both directions
-          ((e.from.nodeId === this.from.nodeId &&
-            e.to.nodeId === this.to.nodeId) ||
-            (e.from.nodeId === this.to.nodeId &&
-              e.to.nodeId === this.from.nodeId))
-      );
-      if (existingEdgeIndex === -1) {
-        node.edges.push(this);
+      if (node.edges) {
+        const existingEdgeIndex = node.edges.findIndex(
+          (e) =>
+            e.wayid === this.wayid &&
+            // Check both directions
+            ((e.from.nodeId === this.from.nodeId &&
+              e.to.nodeId === this.to.nodeId) ||
+              (e.from.nodeId === this.to.nodeId &&
+                e.to.nodeId === this.from.nodeId))
+        );
+        if (existingEdgeIndex === -1) {
+          node.edges.push(this);
+        }
       }
     };
 

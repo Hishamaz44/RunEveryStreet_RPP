@@ -59,7 +59,7 @@ var totaluniqueroads;
 var visitedEdges = [];
 var visitedNodes = [];
 var totalVisitedEdgeDistance = 0;
-
+let graphologyGraph;
 function setup() {
   // This code snippet initializes the values
   // check if user has location enabled. If yes, center to their location
@@ -183,9 +183,11 @@ function draw() {
   // showNodes();
   // showEdges();
   // console.log(mode);
-  if (!hasRun) {
-    implementAlgorithm();
-    hasRun = true;
+  if (nodes.length > 0 && edges.length > 0) {
+    if (!hasRun) {
+      implementAlgorithm();
+      hasRun = true;
+    }
   }
 }
 
@@ -242,6 +244,11 @@ function getOverpassData() {
     parseUnvisitedEdges(OSMxml);
     console.log("nodes: ", nodes);
     console.log("edges: ", edges);
+    let graphologyGraph = createGraph2(nodes, edges);
+    console.log(
+      "This is the graphology graph from the unvisited edges: ",
+      graphologyGraph
+    );
     nodes.forEach((node) => {
       node.x = map(node.lon, mapminlon, mapmaxlon, 0, mapWidth);
       node.y = map(node.lat, mapminlat, mapmaxlat, mapHeight, 0);
