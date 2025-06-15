@@ -57,8 +57,46 @@ function implementAlgorithm() {
       edges.push(edge);
     }
   }
+  // output augmented edges and nodes.
   console.log(edges);
   console.log(nodes);
+  heirholzerAlgorithm(nodes, edges);
+}
+
+function heirholzerAlgorithm(nodes, edges) {
+  // Here we can implement hierholzer's algorithm, which finds the eulerian circuit.
+  let currentNode = nodes[0];
+  let stack = [];
+  stack.push(currentNode);
+  let totalDistance = 0;
+  let route = [];
+  let unvisitedchosenEdge;
+  let done = false;
+  while (true) {
+    let foundUnvisitedEdge = false;
+    for (let i = 0; i < currentNode.edges.length; i++) {
+      if (currentNode.edges[i].visited == false) {
+        unvisitedchosenEdge = currentNode.edges[i];
+        unvisitedchosenEdge.visited = true;
+        totalDistance = totalDistance + unvisitedchosenEdge.distance;
+        let otherNode = unvisitedchosenEdge.OtherNodeofEdge(currentNode);
+        stack.push(otherNode);
+        currentNode = otherNode;
+        foundUnvisitedEdge = true;
+        break;
+      }
+    }
+    if (!foundUnvisitedEdge) {
+      if (stack.length > 0) {
+        currentNode = stack.pop();
+        route.push(currentNode);
+      } else {
+        done = true;
+        console.log({ route, totalDistance });
+        break;
+      }
+    }
+  }
 }
 
 window.implementAlgorithm = implementAlgorithm;

@@ -112,7 +112,7 @@ function parseVisitedEdges(data) {
       let tonode = getNodebyId(nodesinsideway[j + 1].getAttribute("ref"));
       if ((fromnode != null) & (tonode != null)) {
         let newEdge = new Edge(fromnode, tonode, wayid);
-        newEdge.visited = true;
+        newEdge.visited = false;
         newEdge.visitedOriginal = true;
         checkEdgeDuplicate(edges, newEdge);
       }

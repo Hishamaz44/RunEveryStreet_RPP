@@ -6,7 +6,7 @@ function displayGPXTrack(nodes, edges) {
   // Only show nodes that are connected to visited edges
   const nodesWithedges = new Set();
   edges.forEach((e) => {
-    if (e.visited) {
+    if (e.visitedOriginal) {
       nodesWithedges.add(e.from.nodeId);
       nodesWithedges.add(e.to.nodeId);
     }
@@ -24,7 +24,7 @@ function displayGPXTrack(nodes, edges) {
 
   // Only show edges that are marked as visited
   edges.forEach((e) => {
-    if (e.visited) {
+    if (e.visitedOriginal) {
       const fromCoord = ol.proj.fromLonLat([e.from.lon, e.from.lat]);
       const toCoord = ol.proj.fromLonLat([e.to.lon, e.to.lat]);
       const feature = new ol.Feature({
