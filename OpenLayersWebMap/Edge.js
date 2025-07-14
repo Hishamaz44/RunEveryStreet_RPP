@@ -14,6 +14,7 @@ class Edge {
       this.to.lat,
       this.to.lon
     );
+    this.augmentedPath = [];
     // if (!this.from.edges.includes(this)) {
     //   this.from.edges.push(this);
     // }

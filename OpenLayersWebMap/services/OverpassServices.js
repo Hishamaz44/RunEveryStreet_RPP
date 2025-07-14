@@ -55,7 +55,8 @@ function gpxToOverpass(gpxCoordinates) {
     console.log("nodes: ", nodes);
     console.log("edges: ", edges);
     displayGPXTrack(nodes, edges);
-    graphologyGraph = createGraph2(nodes, edges);
+    // graphologyGraph = createGraph2(nodes, edges);
+    // implementAlgorithm(graphologyGraph);
   }
   fetchNodeAndEdges();
 }
@@ -82,7 +83,7 @@ function parseVisitedNodes(data) {
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
     let node = new Node1(id, lat, lon);
-    node.visited = true;
+    node.visited = false;
     node.visitedOriginal = true;
     checkNodeDuplicate(nodes, node);
   }
@@ -140,8 +141,10 @@ function checkEdgeDuplicate(edges, newEdge) {
   for (let i = 0; i < edges.length; i++) {
     if (edges[i].wayid === newEdge.wayid) {
       if (
-        edges[i].from.nodeId === newEdge.from.nodeId &&
-        edges[i].to.nodeId === newEdge.to.nodeId
+        (edges[i].from.nodeId === newEdge.from.nodeId &&
+          edges[i].to.nodeId === newEdge.to.nodeId) ||
+        (edges[i].from.nodeId === newEdge.to.nodeId &&
+          edges[i].to.nodeId === newEdge.from.nodeId)
       ) {
         isDuplicateEdge = true;
         break;
@@ -274,7 +277,15 @@ function checkDuplicates() {
   };
 }
 
+function callFunctionFromOverpass(Graph) {
+  console.log("am i able to call implementAlgorithm from this function?");
+  console.log("Call graph from callfunctionfromOverpass", Graph);
+  implementAlgorithm(Graph);
+}
+
 // allows functions to be used globally.
 window.gpxToOverpass = gpxToOverpass;
 window.parseUnvisitedNodes = parseUnvisitedNodes;
 window.parseUnvisitedEdges = parseUnvisitedEdges;
+window.callFunctionFromOverpass = callFunctionFromOverpass;
+window.checkEdgeDuplicate = checkEdgeDuplicate;

@@ -1,7 +1,9 @@
 // This is a class to integrate Graphology into the project
 
 import * as Graph from "graphology";
-import * as shortestpath from "graphology-shortest-path";
+// import * as shortestpath from "graphology-shortest-path";
+import { dijkstra } from "graphology-shortest-path";
+import { connectedComponents } from "graphology-components";
 
 let resultArray = [];
 export function createGraph2(nodes, edges) {
@@ -18,12 +20,14 @@ export function createGraph2(nodes, edges) {
   for (let i = 0; i < edges.length; i++) {
     let fromnodeid = edges[i].from.nodeId.toString();
     let tonodeid = edges[i].to.nodeId.toString();
-    graph.addUndirectedEdge(fromnodeid, tonodeid, {
-      distance: edges[i].distance,
-      wayid: edges[i].wayid,
-      visited: edges[i].visited,
-      visitedOriginal: edges[i].visitedOriginal,
-    });
+    if (graph.hasNode(fromnodeid) && graph.hasNode(tonodeid)) {
+      graph.addUndirectedEdge(fromnodeid, tonodeid, {
+        distance: edges[i].distance,
+        wayid: edges[i].wayid,
+        visited: edges[i].visited,
+        visitedOriginal: edges[i].visitedOriginal,
+      });
+    }
   }
   // console.log(graph);
   return graph;
@@ -31,42 +35,26 @@ export function createGraph2(nodes, edges) {
 
 function dijkstraGraphology(graph, source, target) {
   let distance = 0;
+  const path = dijkstra.bidirectional(graph, source, target, "distance");
 
-  const path = shortestpath.dijkstra.bidirectional(
-    graph,
-    source,
-    target,
-    "distance"
-  );
-  if (path) {
-    for (let i = 0; i < path.length; i++) {
-      if (path[i + 1]) {
-        let edge = graph.edge(path[i], path[i + 1]);
-        distance = distance + graph.getEdgeAttribute(edge, "distance");
-      }
-    }
-    resultArray.push({ source, target, distance, path });
+  if (!path) {
+    console.warn(`⚠️ No path found between ${source} and ${target}`);
+    return null;
   }
-  for (let i = 0; i < resultArray.length; i++) {}
-  return resultArray;
+
+  for (let i = 0; i < path.length - 1; i++) {
+    const edge = graph.edge(path[i], path[i + 1]);
+    distance += graph.getEdgeAttribute(edge, "distance");
+  }
+
+  return { source, target, distance, path };
 }
 
-// function dijkstraGraphology(graph, source, target) {
-//   let distance = 0;
-//   const path = shortestpath.dijkstra.bidirectional(
-//     graph,
-//     source,
-//     target,
-//     "distance"
-//   );
-//   for (let i = 0; i < path.length; i++) {
-//     if (path[i + 1]) {
-//       let edge = graph.edge(path[i], path[i + 1]);
-//       distance = distance + graph.getEdgeAttribute(edge, "distance");
-//     }
-//   }
-//   console.log("this is the path and its distance", { path }, { distance });
-// }
+function isConnected(Graph) {
+  const components = connectedComponents(Graph);
+  return components;
+}
 
 window.createGraph2 = createGraph2;
 window.dijkstraGraphology = dijkstraGraphology;
+window.isConnected = isConnected;

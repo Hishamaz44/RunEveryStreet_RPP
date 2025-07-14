@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "graphology": "^0.26.0",
+    "graphology-components": "^1.5.4",
     "graphology-shortest-path": "^2.1.0",
     "js-graph-algorithms": "^1.0.18",
     "jsdom": "^26.1.0",

@@ -12,6 +12,7 @@ openlayersmap = new ol.Map({
   }),
 });
 
+let graphologyGraph;
 var canvas;
 var mapHeight;
 var windowX, windowY;
@@ -59,7 +60,8 @@ var totaluniqueroads;
 var visitedEdges = [];
 var visitedNodes = [];
 var totalVisitedEdgeDistance = 0;
-let graphologyGraph;
+let totalDistanceRevised;
+var hoveredNode = null;
 function setup() {
   // This code snippet initializes the values
   // check if user has location enabled. If yes, center to their location
@@ -84,7 +86,7 @@ function setup() {
   colorMode(HSB);
   mode = choosemapmode;
   iterationsperframe = 1;
-  margin = 0.1;
+  margin = 0.17;
   showMessage("Zoom to selected area, then click here");
 
   document.getElementById("gpxFile").addEventListener("change", function (e) {
@@ -99,14 +101,15 @@ function setup() {
       }
     }
   });
+
+  document.getElementById("resetButton").addEventListener("click", function () {
+    resetAlgorithm();
+  });
 }
 
-let hasRun = false;
+let hasRun = true;
 function draw() {
   //main loop that gets run while the website is running
-  // if (touches.length > 0) {
-  //   isTouchScreenDevice = true;
-  // }
   clear();
   drawMask();
 
@@ -119,6 +122,13 @@ function draw() {
       for (let it = 0; it < iterationsperframe; it++) {
         iterations++;
         let solutionfound = false;
+        let totalDistanceRevised = 0;
+        for (let i = 0; i < edges.length; i++) {
+          if (edges[i].augmentedEdge == false) {
+            // console.log(edges[i]);
+            totalDistanceRevised = totalDistanceRevised + edges[i].distance;
+          }
+        }
         while (!solutionfound) {
           //run randomly down least roads until all roads have been run
           shuffle(currentnode.edges, true);
@@ -155,10 +165,10 @@ function draw() {
               bestdistance = currentroute.distance;
               if (efficiencyhistory.length > 1) {
                 totalefficiencygains +=
-                  totalEdgeDistance / bestroute.distance -
+                  totalDistanceRevised / bestroute.distance -
                   efficiencyhistory[efficiencyhistory.length - 1];
               }
-              efficiencyhistory.push(totalEdgeDistance / bestroute.distance);
+              efficiencyhistory.push(totalDistanceRevised / bestroute.distance);
               distancehistory.push(bestroute.distance);
             }
             currentnode = startnode;
@@ -183,9 +193,12 @@ function draw() {
   // showNodes();
   // showEdges();
   // console.log(mode);
+
   if (nodes.length > 0 && edges.length > 0) {
     if (!hasRun) {
-      implementAlgorithm();
+      showRoads = true;
+      graphologyGraph = createGraph2(nodes, edges);
+      implementAlgorithm(graphologyGraph);
       hasRun = true;
     }
   }
@@ -242,13 +255,13 @@ function getOverpassData() {
     // parse nodes and edges
     parseUnvisitedNodes(OSMxml);
     parseUnvisitedEdges(OSMxml);
-    console.log("nodes: ", nodes);
-    console.log("edges: ", edges);
-    let graphologyGraph = createGraph2(nodes, edges);
-    console.log(
-      "This is the graphology graph from the unvisited edges: ",
-      graphologyGraph
-    );
+    // graphologyGraph = createGraph2(nodes, edges);
+    // console.log(
+    //   "This is the graphology graph from the unvisited edges: ",
+    //   graphologyGraph
+    // );
+
+    // implementAlgorithm();
     nodes.forEach((node) => {
       node.x = map(node.lon, mapminlon, mapmaxlon, 0, mapWidth);
       node.y = map(node.lat, mapminlat, mapmaxlat, mapHeight, 0);
@@ -261,9 +274,9 @@ function getOverpassData() {
 function showEdges() {
   let closestedgetomousedist = Infinity;
   for (let i = 0; i < edges.length; i++) {
-    if (!edges[i].visited) {
-      edges[i].show();
-    }
+    // if (!edges[i].visited) {
+    edges[i].show();
+    // }
     if (mode == trimmode) {
       let dist = edges[i].distanceToPoint(mouseX, mouseY);
       if (dist < closestedgetomousedist) {
@@ -302,6 +315,7 @@ function mousePressed() {
 
   if (mode == trimmode) {
     showEdges(); // find closest edge
+    // implement();
     if (
       mouseY < btnBRy &&
       mouseY > btnTLy &&
@@ -316,10 +330,16 @@ function mousePressed() {
       solveRES();
       return;
     } else {
-      // clicked on edge to remove it
-      trimSelectedEdge();
-      console.log("nodes: ", nodes);
-      console.log("edges: ", edges);
+      // Only trim the edge if it's close enough to the mouse cursor
+      const DISTANCE_THRESHOLD = 20; // Adjust this value as needed (in pixels)
+
+      if (closestedgetomouse >= 0) {
+        let dist = edges[closestedgetomouse].distanceToPoint(mouseX, mouseY);
+        if (dist < DISTANCE_THRESHOLD) {
+          // Only delete if we're close enough
+          trimSelectedEdge();
+        }
+      }
     }
   }
 }
@@ -351,31 +371,67 @@ function getNodebyId(id) {
 }
 
 // this is a section to add all the remaining runEveryStreet code
+// ... existing code ...
 function showNodes() {
+  const HOVER_THRESHOLD = 12; // pixels
+
+  hoveredNode = null; // reset each frame
   let closestnodetomousedist = Infinity;
+  let closestHoverDist = Infinity;
 
   for (let i = 0; i < nodes.length; i++) {
-    if (showRoads) {
-      nodes[i].show();
+    if (showRoads) nodes[i].show();
+
+    // distance from mouse to this node
+    const d = dist(nodes[i].x, nodes[i].y, mouseX, mouseY);
+
+    // 1) generic hover detection (works in every mode)
+    if (d < closestHoverDist && d < HOVER_THRESHOLD) {
+      closestHoverDist = d;
+      hoveredNode = nodes[i];
     }
-    if (mode == selectnodemode) {
-      disttoMouse = dist(nodes[i].x, nodes[i].y, mouseX, mouseY);
-      // console.log("distancetomouse", disttoMouse);
-      if (disttoMouse < closestnodetomousedist) {
-        closestnodetomousedist = disttoMouse;
-        closestnodetomouse = i;
-      }
+
+    // 2) logic used only while selecting the start node
+    if (mode == selectnodemode && d < closestnodetomousedist) {
+      closestnodetomousedist = d;
+      closestnodetomouse = i;
     }
   }
-  if (mode == selectnodemode) {
-    startnode = nodes[closestnodetomouse];
-  }
-  if (startnode != null && (!isTouchScreenDevice || mode != selectnodemode)) {
+
+  // handle start-node selection & highlighting
+  if (mode == selectnodemode) startnode = nodes[closestnodetomouse];
+  if (startnode && (!isTouchScreenDevice || mode != selectnodemode)) {
     startnode.highlight();
   }
-}
 
-function runtests() {
-  console.log("this is a test");
+  // draw the nodeId label if hovering
+  if (hoveredNode) {
+    push();
+    noStroke();
+    fill(0); // black text
+    textSize(14);
+    textAlign(LEFT, BOTTOM);
+    text(hoveredNode.nodeId, hoveredNode.x + 8, hoveredNode.y - 8);
+    pop();
+  }
 }
-runtests();
+// ... existing code ...
+
+function resetAlgorithm() {
+  hasRun = false;
+
+  // Reset any other variables needed
+  console.log("Algorithm state reset. Ready to run again.");
+
+  // Optional: Clear previous results
+  bestroute = null;
+  bestdistance = Infinity;
+  efficiencyhistory = [];
+  distancehistory = [];
+
+  // If you want to reset the graph too (optional)
+  if (graphologyGraph) {
+    // Re-create the graph from nodes and edges
+    graphologyGraph = createGraph2(nodes, edges);
+  }
+}

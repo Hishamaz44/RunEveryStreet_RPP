@@ -1,36 +1,87 @@
-//testing to see where the changes get updated
-// test2
+function implementAlgorithm(Graph) {
+  // the function takes graph as a graphology instance
 
-function implementAlgorithm() {
+  /* 
+  full graph with both visited and unvisited edges should be saved, and used in point 4. 
+  */
+
   let oddNodes = [];
   let oddNodePairs = [];
   let uniquePairs = [];
-  // console.log("This is nodes run from implementAlgorithm: ", nodes);
-  // console.log("This is edges run from implementAlgorithm: ", edges);
-  // console.log("This is a created graph in Graphology: ", graphologyGraph);
+  let SubgraphNodes = [];
+  let SubgraphEdges = [];
+  // let tempNodes = [];
+  // let tempEdges = [];
+  // let shortestPathComponents = [];
+  let shortestPathComponents2 = [];
 
-  // 1. identify all odd nodes and save them in oddNodes
+  // 1 add nodes to subgraph
+
   for (let i = 0; i < nodes.length; i++) {
-    if (nodes[i].edges.length % 2 == 1) {
-      oddNodes.push(nodes[i]);
+    let addNode = false;
+    for (let j = 0; j < nodes[i].edges.length; j++) {
+      if (nodes[i].edges[j].visitedOriginal === false) {
+        addNode = true;
+        break;
+      }
+    }
+    if (addNode) {
+      SubgraphNodes.push(nodes[i]);
     }
   }
-  console.log("these are the odd nodes in the graph: ", oddNodes);
-  // 2. find the distances between all unique odd node pairs
+  for (const node of SubgraphNodes) {
+    node.edges = node.edges.filter((edge) => edge.visited === false);
+  }
+
+  // 2 add edges to subgraph
+  for (let i = 0; i < edges.length; i++) {
+    if (edges[i].visitedOriginal == false) {
+      SubgraphEdges.push(edges[i]);
+    }
+  }
+
+  let disconnectedGraphologyGraph = createGraph2(SubgraphNodes, SubgraphEdges);
+
+  // 3 find whether the Graph is connected or not using Graphology
+  let components = isConnected(disconnectedGraphologyGraph);
+
+  // 4 find shortest path between the components
+  shortestPathComponents2 = findShortestPairsWithSupernodes(components, Graph);
+
+  // 5 connect the shortest paths between the components using a version of Kruskal
+  let connectedResults = connectComponents(shortestPathComponents2);
+  console.log(
+    "This are the edges that will need to be connected to create a conneceted graph",
+    connectedResults
+  );
+
+  createConnectingEdges(SubgraphEdges, connectedResults);
+
+  // 6 get all odd nodes from our subgraph
+  for (let i = 0; i < SubgraphNodes.length; i++) {
+    if (SubgraphNodes[i].edges.length % 2 == 1) {
+      oddNodes.push(SubgraphNodes[i]);
+    }
+  }
+  console.log("these are the odd nodes", oddNodes);
+  console.log(Graph);
+  // 7 get all odd node pair distances
   for (let i = 0; i < oddNodes.length; i++) {
     for (let j = i + 1; j < oddNodes.length; j++) {
       if (oddNodes[i].nodeId !== oddNodes[j].nodeId) {
-        oddNodePairs = dijkstraGraphology(
-          graphologyGraph,
+        const result = dijkstraGraphology(
+          Graph,
           oddNodes[i].nodeId.toString(),
           oddNodes[j].nodeId.toString()
         );
+
+        if (result) oddNodePairs.push(result);
       }
     }
   }
-  // 3. rank them from descending order, and then follow a naive greedy approach to choose shortest distances
+
+  //8 Here we find the shortest distances between all odd nodes, and pair them together
   oddNodePairs.sort((a, b) => a.distance - b.distance);
-  console.log("these are the sorted odd node pairs: ", oddNodePairs);
   let uniqueSet = new Set();
   for (let i = 0; i < oddNodePairs.length; i++) {
     if (
@@ -42,61 +93,251 @@ function implementAlgorithm() {
       uniquePairs.push(oddNodePairs[i]);
     }
   }
-  console.log("these are the unique matched pairs: ", uniquePairs);
-  // 4. Augment paths into the original graph
+  console.log("These are the unique pairs of the odd nodes", uniquePairs);
+  createAugmentedEdges(SubgraphEdges, uniquePairs);
+  const nodeList = hierholzerAlgorithm(SubgraphNodes, SubgraphEdges);
+  console.log("Subgraph edges after adding augmented edges", SubgraphEdges);
+  console.log(nodeList);
+  const gpx = generateGPX(nodeList);
+  downloadGPX(gpx, "RPPtest");
+}
+
+// find shortest pairs between components using supernodes (1 node that connects all nodes with 0 costs, within its component)
+function findShortestPairsWithSupernodes(components, graph) {
+  const metagraphResults = [];
+  let edgeId = 0;
+
+  // Step 1: Add super-nodes and zero-weight edges
+  for (let i = 0; i < components.length; i++) {
+    const superId = `super-${i}`;
+
+    graph.addNode(superId);
+
+    for (const nodeId of components[i]) {
+      graph.addUndirectedEdge(superId, nodeId, {
+        distance: 0,
+      });
+    }
+  }
+
+  // Step 2: Run Dijkstra from each super-node to other super-nodes
+  for (let i = 0; i < components.length; i++) {
+    for (let j = i + 1; j < components.length; j++) {
+      const superFrom = `super-${i}`;
+      const superTo = `super-${j}`;
+
+      const result = dijkstraGraphology(graph, superFrom, superTo);
+      // remove all super nodes from path so only the normal path remains
+      result.path = result.path.slice(1, -1);
+      console.log("this is the path of the result", result.path);
+      // assign normal nodes to from and to nodes
+      let from = result.path[0];
+      let to = result.path[result.path.length - 1];
+      if (result) {
+        console.log("i think the code is not going here");
+        metagraphResults.push({
+          id: edgeId++,
+          distance: result.distance,
+          from: from,
+          to: to,
+          path: result.path,
+        });
+      }
+    }
+  }
+
+  //remove all supernodes
+  graph.forEachNode((nodeId) => {
+    if (nodeId.startsWith("super-")) {
+      graph.dropNode(nodeId);
+    }
+  });
+  return metagraphResults;
+}
+
+// connect the components into the graph.
+// this function is AI written. Write it again to learn what it does.
+function connectComponents(metagraphResults) {
+  let connectedResults = [];
+
+  // Sort by distance
+  metagraphResults.sort((a, b) => a.distance - b.distance);
+  console.log(metagraphResults);
+
+  // Map string IDs to integer indices
+  const idToIndex = new Map();
+  let index = 0;
+
+  for (const edge of metagraphResults) {
+    if (!idToIndex.has(edge.from)) {
+      idToIndex.set(edge.from, index++);
+    }
+    if (!idToIndex.has(edge.to)) {
+      idToIndex.set(edge.to, index++);
+    }
+  }
+
+  // Union-Find setup
+  // initializes all disconnected components as their own parent
+  const parent = new Array(index).fill(0).map((_, i) => i);
+
+  // finds the parent of x recursively
+  function find(x) {
+    if (parent[x] !== x) {
+      parent[x] = find(parent[x]);
+    }
+    return parent[x];
+  }
+  // merges the sets that x and y belong to (to avoid duplicates)
+  function union(x, y) {
+    const rootX = find(x);
+    const rootY = find(y);
+    if (rootX === rootY) return false;
+    parent[rootY] = rootX;
+    return true;
+  }
+
+  // Kruskal loop
+  for (let i = 0; i < metagraphResults.length; i++) {
+    const edge = metagraphResults[i];
+    const fromIndex = idToIndex.get(edge.from);
+    const toIndex = idToIndex.get(edge.to);
+
+    if (union(fromIndex, toIndex)) {
+      connectedResults.push(edge);
+    }
+  }
+
+  return connectedResults;
+}
+
+function createConnectingEdges(edges, connectingEdges) {
+  // this function will connect all the component connecting edges
+  // to the original graph and append them to the original edges array
+
+  for (let i = 0; i < connectingEdges.length; i++) {
+    let pathArray = [];
+    let path = connectingEdges[i].path;
+    let pathDistance = connectingEdges[i].distance;
+
+    let fromNode = connectingEdges[i].from;
+    let toNode = connectingEdges[i].to;
+
+    let edge = new Edge(
+      getNodebyId(fromNode),
+      getNodebyId(toNode),
+      "connectingedge" + fromNode + "-" + toNode
+    );
+    edge.augmentedEdge = true;
+    edge.distance = pathDistance;
+    edge.augmentedPath = path;
+    edges.push(edge);
+  }
+}
+
+function createAugmentedEdges(edges, uniquePairs) {
+  // here we can start implementing our hierholzer's algorithm.
+  // first, we get the respective paths of the unique pairs
   for (let i = 0; i < uniquePairs.length; i++) {
+    // we extract all relevant information to create the augmented edge
+    let pathArray = [];
     let path = uniquePairs[i].path;
     let distanceOfPath = uniquePairs[i].distance;
-    for (let j = 0; j < path.length - 1; j++) {
-      let edge = new Edge(
-        getNodebyId(path[j]),
-        getNodebyId(path[j + 1]),
-        "wayid" + j
-      );
-      edge.augmentedEdge = true;
-      edges.push(edge);
-    }
+
+    let fromNode = path[0];
+    let toNode = path[path.length - 1];
+    path.forEach((element) => {
+      pathArray.push(element);
+    });
+    let edgeId = fromNode + "-" + toNode;
+    let edge = new Edge(getNodebyId(fromNode), getNodebyId(toNode), edgeId);
+    edge.augmentedEdge = true;
+    edge.augmentedPath = pathArray;
+    edge.distance = distanceOfPath;
+    edges.push(edge);
   }
-  // output augmented edges and nodes.
-  console.log(edges);
-  console.log(nodes);
-  heirholzerAlgorithm(nodes, edges);
 }
 
-function heirholzerAlgorithm(nodes, edges) {
-  // Here we can implement hierholzer's algorithm, which finds the eulerian circuit.
-  let currentNode = nodes[0];
+function hierholzerAlgorithm(nodes, edges) {
+  // This is where we write our Euler circuit algorithm.
   let stack = [];
-  stack.push(currentNode);
-  let totalDistance = 0;
-  let route = [];
-  let unvisitedchosenEdge;
+  let path = [];
   let done = false;
-  while (true) {
-    let foundUnvisitedEdge = false;
+  let totalDistance = 0;
+
+  stack.push(startnode);
+
+  while (!done) {
+    if (stack.length == 0) {
+      done = true;
+      return path;
+      // console.log("this is the total distance", totalDistance);
+      break;
+    }
+    let currentNode = stack[stack.length - 1];
+    let unvisitedEdge;
+    let foundUnvisited = false;
     for (let i = 0; i < currentNode.edges.length; i++) {
-      if (currentNode.edges[i].visited == false) {
-        unvisitedchosenEdge = currentNode.edges[i];
-        unvisitedchosenEdge.visited = true;
-        totalDistance = totalDistance + unvisitedchosenEdge.distance;
-        let otherNode = unvisitedchosenEdge.OtherNodeofEdge(currentNode);
-        stack.push(otherNode);
-        currentNode = otherNode;
-        foundUnvisitedEdge = true;
+      if (currentNode.edges[i].visited === false) {
+        foundUnvisited = true;
+        unvisitedEdge = currentNode.edges[i];
+        let nodeToVisit = unvisitedEdge.OtherNodeofEdge(currentNode);
+        stack.push(nodeToVisit);
+        totalDistance = totalDistance + unvisitedEdge.distance;
+        unvisitedEdge.visited = true;
         break;
       }
     }
-    if (!foundUnvisitedEdge) {
-      if (stack.length > 0) {
-        currentNode = stack.pop();
-        route.push(currentNode);
-      } else {
-        done = true;
-        console.log({ route, totalDistance });
-        break;
-      }
+    if (!foundUnvisited) {
+      let temp = stack.pop();
+      path.push(temp);
     }
   }
 }
 
+function generateGPX(pathNodes) {
+  const gpxHeader = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="YourApp" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Route</name>
+    <trkseg>`;
+
+  const gpxFooter = `
+    </trkseg>
+  </trk>
+</gpx>`;
+
+  const trackPoints = pathNodes
+    .map((node) => {
+      return `      <trkpt lat="${node.lat}" lon="${node.lon}">\n        <ele>${
+        node.ele || 0
+      }</ele>\n      </trkpt>`;
+    })
+    .join("\n");
+
+  return gpxHeader + "\n" + trackPoints + "\n" + gpxFooter;
+}
+
+function downloadGPX(gpxString, filename = "route.gpx") {
+  const blob = new Blob([gpxString], { type: "application/gpx+xml" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.style.display = "none";
+
+  document.body.appendChild(a);
+  a.click();
+
+  // Cleanup
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
+}
+
+function expandAugmentedEdges() {}
+// implement a filter function that sorts by several factors including temp, etc.
 window.implementAlgorithm = implementAlgorithm;
+// window.implementAlgorithm2 = implementAlgorithm2;

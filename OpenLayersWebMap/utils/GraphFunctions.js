@@ -1,3 +1,5 @@
+//js-graph-alg
+
 function displayGPXTrack(nodes, edges) {
   const vectorSource = new ol.source.Vector();
   const vectorLayer = new ol.layer.Vector({ source: vectorSource });
@@ -153,6 +155,13 @@ function trimSelectedEdge() {
 }
 
 function drawProgressGraph() {
+  let totalDistanceRevised = 0;
+  for (let i = 0; i < edges.length; i++) {
+    if (edges[i].augmentedEdge == false) {
+      // console.log(edges[i]);
+      totalDistanceRevised = totalDistanceRevised + edges[i].distance;
+    }
+  }
   if (efficiencyhistory.length > 0) {
     noStroke();
     fill(0, 0, 0, 0.3);
@@ -161,11 +170,13 @@ function drawProgressGraph() {
     fill(0, 5, 225, 255);
     textAlign(LEFT);
     textSize(12);
+    // let totalDistanceRevised;
+    console.log("this is totalEdgeDistance: ", totalEdgeDistance);
     text(
       "Routes tried: " +
         iterations.toLocaleString() +
         ", Length of all roads: " +
-        nf(totalEdgeDistance, 0, 1) +
+        nf(totalDistanceRevised, 0, 1) +
         "km, Best route: " +
         nf(bestroute.distance, 0, 1) +
         "km (" +
