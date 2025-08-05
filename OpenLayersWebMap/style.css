@@ -1,0 +1,38 @@
+.filter-section {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 10px;
+}
+
+.filter-row {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-row label {
+  flex: 1;
+  margin-right: 10px;
+  font-size: 11px;
+}
+
+.filter-row input {
+  margin-left: 5px;
+  padding: 2px 5px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+#filterPanel h4 {
+  margin: 0 0 8px 0;
+  color: #ffcc00;
+  font-size: 13px;
+}
+
+#filterPanel h5 {
+  margin: 8px 0 5px 0;
+  color: #cccccc;
+  font-size: 11px;
+}

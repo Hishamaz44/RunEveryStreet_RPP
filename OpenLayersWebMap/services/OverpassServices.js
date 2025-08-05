@@ -10,9 +10,13 @@ function gpxToOverpass(gpxCoordinates) {
   let data;
   const constructQuery = (gpxCoordinates) => {
     // 1. Flatten GPX into a polyline string
-    const lineCoords = gpxCoordinates
-      .map(([lat, lon]) => `${lat},${lon}`)
-      .join(",");
+    const coordinateStrings = [];
+    for (let i = 0; i < gpxCoordinates.length; i++) {
+      const [lat, lon] = gpxCoordinates[i];
+      coordinateStrings.push(`${lat},${lon}`);
+    }
+    const lineCoords = coordinateStrings.join(",");
+
     // creates a line between each gpx point, and extracts all nodes along that line
     return `
         [out:xml][timeout:25];

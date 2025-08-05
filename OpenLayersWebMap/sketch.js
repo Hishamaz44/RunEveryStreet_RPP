@@ -102,6 +102,19 @@ function setup() {
     }
   });
 
+  document.getElementById("csvFile").addEventListener("change", function (e) {
+    let files = e.target.files;
+    if (files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].name.endsWith(".csv")) {
+          loadCSV(files[i]);
+        } else {
+          alert("please select a csv file");
+        }
+      }
+    }
+  });
+
   document.getElementById("resetButton").addEventListener("click", function () {
     resetAlgorithm();
   });
