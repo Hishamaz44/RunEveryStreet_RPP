@@ -36,7 +36,7 @@ A web-based application for route planning and GPX analysis using OpenLayers and
    npm run dev
    ```
 
-4. **Open your browser to:** `http://localhost:3000/RunEveryStreet_RPP/`
+4. **Open your browser to:** `http://localhost:3000/RunEveryStreet_RPP/OpenLayersWebMap`
 
 ## 📦 Build for Production
 
