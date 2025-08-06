@@ -4,7 +4,7 @@ A web-based application for route planning and GPX analysis using OpenLayers and
 
 ## 🚀 Live Demo
 
-**Try it now:** [https://Hishamaz44.github.io/RunEveryStreet_RPP/](https://Hishamaz44.github.io/RunEveryStreet_RPP/)
+**Try it now:** [https://Hishamaz44.github.io/RunEveryStreet_RPP/OpenLayersWebMap](https://Hishamaz44.github.io/RunEveryStreet_RPP/OpenLayersWebMap)
 
 ## ✨ Features
 
