@@ -4,6 +4,10 @@ export default defineConfig({
   // Set the root directory to your OpenLayersWebMap folder
   root: "OpenLayersWebMap",
 
+  // IMPORTANT: Set base path for GitHub Pages
+  // Replace 'RunEveryStreetTutorial' with your actual repository name
+  base: "/RunEveryStreet_RPP/",
+
   // Configure the build output directory
   build: {
     outDir: "../dist",
