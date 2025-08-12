@@ -33,6 +33,36 @@ export function createGraph2(nodes, edges) {
   return graph;
 }
 
+export function createGraph3(nodes, edges) {
+  // Enable multi-graph to allow duplicate edges
+  let graph = new Graph.Graph({ multi: true });
+
+  for (let i = 0; i < nodes.length; i++) {
+    let nodeid = nodes[i].nodeId.toString();
+    graph.addNode(nodeid, {
+      lat: nodes[i].lat,
+      lon: nodes[i].lon,
+      visited: nodes[i].visited,
+      visitedOriginal: nodes[i].visitedOriginal,
+    });
+  }
+
+  for (let i = 0; i < edges.length; i++) {
+    let fromnodeid = edges[i].from.nodeId.toString();
+    let tonodeid = edges[i].to.nodeId.toString();
+    if (graph.hasNode(fromnodeid) && graph.hasNode(tonodeid)) {
+      graph.addUndirectedEdge(fromnodeid, tonodeid, {
+        distance: edges[i].distance,
+        wayid: edges[i].wayid,
+        visited: edges[i].visited,
+        visitedOriginal: edges[i].visitedOriginal,
+      });
+    }
+  }
+
+  return graph;
+}
+
 function dijkstraGraphology(graph, source, target) {
   let distance = 0;
   const path = dijkstra.bidirectional(graph, source, target, "distance");
@@ -58,3 +88,4 @@ function isConnected(Graph) {
 window.createGraph2 = createGraph2;
 window.dijkstraGraphology = dijkstraGraphology;
 window.isConnected = isConnected;
+window.createGraph3 = createGraph3;

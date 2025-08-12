@@ -197,7 +197,9 @@
 
 <!-- Toggle button for filter panel - Bottom Left -->
 <button id="toggleFilters" style="position:fixed;bottom:10px;left:10px;z-index:1001;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Show Filters</button>
-	<button id="resetButton" style="position:fixed;top:150px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply Hierholzer Algorithm</button>
+<button id="applyAlgorithm" style="position:fixed;top:150px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply CE1 Algorithm</button>
+<button id="applyECEAlgorithm" style="position:fixed;top:190px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply ECE Algorithm</button>
+<button id="applyCE2Algorithm" style="position:fixed;top:230px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply CE2 Algorithm</button>
 
 	<!-- Load your modules -->
 	<script type="module" src="graphConverter.js"></script>
@@ -205,8 +207,10 @@
 	<script type="module" src="services/GpxServices.js"></script>
 	<script type="module" src="services/OverpassServices.js"></script>
 	<script type="module" src="utils/GraphFunctions.js"></script>
-	<script type="module" src="algorithm1.js"></script>
+	<script type="module" src="CE1Algorithm.js"></script>
 	<script type="module" src="services/filterFunction.js"></script>
+  <script type="module" src="ECEAlgorithm.js"></script>
+  <script type="module" src="CE2Algorithm.js"></script>
 	<script src="Edge.js"></script>
 	<script src="Node1.js"></script>
 	<script src="Route.js"></script>

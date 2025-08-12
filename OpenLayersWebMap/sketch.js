@@ -115,12 +115,27 @@ function setup() {
     }
   });
 
-  document.getElementById("resetButton").addEventListener("click", function () {
-    resetAlgorithm();
-  });
+  document
+    .getElementById("applyAlgorithm")
+    .addEventListener("click", function () {
+      applyCE1Algorithm();
+    });
+
+  document
+    .getElementById("applyECEAlgorithm")
+    .addEventListener("click", function () {
+      applyECEAlgorithm();
+    });
+  document
+    .getElementById("applyCE2Algorithm")
+    .addEventListener("click", function () {
+      applyCE2Algorithm();
+    });
 }
 
-let hasRun = true;
+let hasRunCE1 = true;
+let hasRunECE = true;
+let hasRunCE2 = true;
 function draw() {
   //main loop that gets run while the website is running
   clear();
@@ -208,11 +223,23 @@ function draw() {
   // console.log(mode);
 
   if (nodes.length > 0 && edges.length > 0) {
-    if (!hasRun) {
+    if (!hasRunCE1) {
       showRoads = true;
       graphologyGraph = createGraph2(nodes, edges);
-      implementAlgorithm(graphologyGraph);
-      hasRun = true;
+      implementCE1Algorithm(graphologyGraph);
+      hasRunCE1 = true;
+    }
+    if (!hasRunECE) {
+      showRoads = true;
+      graphologyGraph = createGraph2(nodes, edges);
+      implementECEAlgorithm(graphologyGraph);
+      hasRunECE = true;
+    }
+    if (!hasRunCE2) {
+      showRoads = true;
+      graphologyGraph = createGraph2(nodes, edges);
+      implementCE2Algorithm(graphologyGraph);
+      hasRunCE2 = true;
     }
   }
 }
@@ -428,23 +455,33 @@ function showNodes() {
     pop();
   }
 }
-// ... existing code ...
 
-function resetAlgorithm() {
-  hasRun = false;
-
-  // Reset any other variables needed
-  console.log("Algorithm state reset. Ready to run again.");
+function applyCE1Algorithm() {
+  hasRunCE1 = false;
 
   // Optional: Clear previous results
   bestroute = null;
   bestdistance = Infinity;
   efficiencyhistory = [];
   distancehistory = [];
+}
 
-  // If you want to reset the graph too (optional)
-  if (graphologyGraph) {
-    // Re-create the graph from nodes and edges
-    graphologyGraph = createGraph2(nodes, edges);
-  }
+function applyECEAlgorithm() {
+  hasRunECE = false;
+
+  // Optional: Clear previous results
+  bestroute = null;
+  bestdistance = Infinity;
+  efficiencyhistory = [];
+  distancehistory = [];
+}
+
+function applyCE2Algorithm() {
+  hasRunCE2 = false;
+
+  // Optional: Clear previous results
+  bestroute = null;
+  bestdistance = Infinity;
+  efficiencyhistory = [];
+  distancehistory = [];
 }
