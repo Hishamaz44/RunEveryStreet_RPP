@@ -2,30 +2,38 @@ let rawData = [];
 let filteredData = [];
 
 function parseCSV(csvText) {
+  console.time("parseCSV");
   const lines = csvText.trim().split("\n");
   const headers = lines[0].split(",");
-  return lines.slice(1).map((line) => {
+  const result = lines.slice(1).map((line) => {
     const values = line.split(",");
     return Object.fromEntries(
       values.map((v, i) => [headers[i], parseValue(v.trim())])
     );
   });
+  console.timeEnd("parseCSV");
+  return result;
 }
 
 function parseValue(val) {
   const num = parseFloat(val);
-  return isNaN(num) ? val : num;
+  const result = isNaN(num) ? val : num;
+
+  return result;
 }
 
 function displayData(data) {
+  console.time("displayData");
   console.log("CSV Data loaded:");
   console.log("Number of rows:", data.length);
   console.log("Headers:", data.length > 0 ? Object.keys(data[0]) : "No data");
   console.log("First few rows:", data.slice(0, 3));
+  console.timeEnd("displayData");
 }
 
 // Get filter values from UI - complete version with SNR
 function getFilterValuesFromUI() {
+  console.time("getFilterValuesFromUI");
   const filters = {};
 
   // Environmental filters
@@ -132,11 +140,13 @@ function getFilterValuesFromUI() {
     filters.signalStrength = signalFilters;
   }
 
+  console.timeEnd("getFilterValuesFromUI");
   return filters;
 }
 
 // Updated filtering function to include SNR in the output
 function filterCoordinatesByMetrics(data, filters) {
+  console.time("filterCoordinatesByMetrics");
   const filteredCoordinates = data
     .filter((entry) => {
       // Check environmental filters
@@ -180,10 +190,12 @@ function filterCoordinatesByMetrics(data, filters) {
       },
     }));
 
+  console.timeEnd("filterCoordinatesByMetrics");
   return filteredCoordinates;
 }
 
 function updateFilterResults(filteredData) {
+  console.time("updateFilterResults");
   const resultsDiv = document.getElementById("filterResults");
   if (resultsDiv) {
     resultsDiv.innerHTML = `
@@ -195,17 +207,22 @@ function updateFilterResults(filteredData) {
       )}%
     `;
   }
+  console.timeEnd("updateFilterResults");
 }
 
 function clearAllFilters() {
+  console.time("clearAllFilters");
   const inputs = document.querySelectorAll("#filterPanel input");
   inputs.forEach((input) => (input.value = ""));
   document.getElementById("filterResults").innerHTML = "";
+  console.timeEnd("clearAllFilters");
 }
 
 function loadCSV(file) {
+  console.time("loadCSV");
   const reader = new FileReader();
   reader.onload = function (event) {
+    console.time("loadCSV-processing");
     const text = event.target.result;
     rawData = parseCSV(text);
     displayData(rawData);
@@ -213,6 +230,8 @@ function loadCSV(file) {
     // Show the filter panel when CSV is loaded
     document.getElementById("filterPanel").style.display = "block";
     document.getElementById("toggleFilters").textContent = "Hide Filters";
+    console.timeEnd("loadCSV-processing");
+    console.timeEnd("loadCSV");
   };
   reader.readAsText(file);
 }

@@ -1,4 +1,5 @@
 function implementCE1Algorithm(Graph) {
+  console.time("implementCE1Algorithm");
   // the function takes graph as a graphology instance
 
   /* 
@@ -16,7 +17,7 @@ function implementCE1Algorithm(Graph) {
   let shortestPathComponents2 = [];
 
   // 1 add nodes to subgraph
-
+  console.time("add-nodes-to-subgraph");
   for (let i = 0; i < nodes.length; i++) {
     let addNode = false;
     for (let j = 0; j < nodes[i].edges.length; j++) {
@@ -32,18 +33,25 @@ function implementCE1Algorithm(Graph) {
   for (const node of SubgraphNodes) {
     node.edges = node.edges.filter((edge) => edge.visited === false);
   }
+  console.timeEnd("add-nodes-to-subgraph");
 
   // 2 add edges to subgraph
+  console.time("add-edges-to-subgraph");
   for (let i = 0; i < edges.length; i++) {
     if (edges[i].visitedOriginal == false) {
       SubgraphEdges.push(edges[i]);
     }
   }
+  console.timeEnd("add-edges-to-subgraph");
 
+  console.time("create-disconnected-graph");
   let disconnectedGraphologyGraph = createGraph2(SubgraphNodes, SubgraphEdges);
+  console.timeEnd("create-disconnected-graph");
 
   // 3 find whether the Graph is connected or not using Graphology
+  console.time("check-connectivity");
   let components = isConnected(disconnectedGraphologyGraph);
+  console.timeEnd("check-connectivity");
 
   if (components.length > 1) {
     // 4 find shortest path between the components
@@ -63,6 +71,7 @@ function implementCE1Algorithm(Graph) {
   }
 
   // 6 get all odd nodes from our subgraph
+  console.time("find-odd-nodes");
   for (let i = 0; i < SubgraphNodes.length; i++) {
     if (SubgraphNodes[i].edges.length % 2 == 1) {
       oddNodes.push(SubgraphNodes[i]);
@@ -70,7 +79,10 @@ function implementCE1Algorithm(Graph) {
   }
   console.log("these are the odd nodes", oddNodes);
   console.log(Graph);
+  console.timeEnd("find-odd-nodes");
+
   // 7 get all odd node pair distances
+  console.time("calculate-odd-node-pairs");
   for (let i = 0; i < oddNodes.length; i++) {
     for (let j = i + 1; j < oddNodes.length; j++) {
       if (oddNodes[i].nodeId !== oddNodes[j].nodeId) {
@@ -84,8 +96,10 @@ function implementCE1Algorithm(Graph) {
       }
     }
   }
+  console.timeEnd("calculate-odd-node-pairs");
 
   //8 Here we find the shortest distances between all odd nodes, and pair them together
+  console.time("find-unique-pairs");
   oddNodePairs.sort((a, b) => a.distance - b.distance);
   let uniqueSet = new Set();
   for (let i = 0; i < oddNodePairs.length; i++) {
@@ -99,6 +113,7 @@ function implementCE1Algorithm(Graph) {
     }
   }
   console.log("These are the unique pairs of the odd nodes", uniquePairs);
+  console.timeEnd("find-unique-pairs");
 
   // 9. Here we create the augmented edges
   createAugmentedEdges(SubgraphEdges, uniquePairs);
@@ -108,14 +123,17 @@ function implementCE1Algorithm(Graph) {
   console.log(nodeList);
   const gpx = generateGPX(nodeList);
   downloadGPX(gpx, "RPPtest");
+  console.timeEnd("implementCE1Algorithm");
 }
 
 // find shortest pairs between components using supernodes (1 node that connects all nodes with 0 costs, within its component)
 function findShortestPairsWithSupernodes(components, graph) {
+  console.time("findShortestPairsWithSupernodes");
   const metagraphResults = [];
   let edgeId = 0;
 
   // Step 1: Add super-nodes and zero-weight edges
+  console.time("add-supernodes");
   for (let i = 0; i < components.length; i++) {
     const superId = `super-${i}`;
 
@@ -127,8 +145,10 @@ function findShortestPairsWithSupernodes(components, graph) {
       });
     }
   }
+  console.timeEnd("add-supernodes");
 
   // Step 2: Run Dijkstra from each super-node to other super-nodes
+  console.time("dijkstra-between-supernodes");
   for (let i = 0; i < components.length; i++) {
     for (let j = i + 1; j < components.length; j++) {
       const superFrom = `super-${i}`;
@@ -153,19 +173,25 @@ function findShortestPairsWithSupernodes(components, graph) {
       }
     }
   }
+  console.timeEnd("dijkstra-between-supernodes");
 
   //remove all supernodes
+  console.time("remove-supernodes");
   graph.forEachNode((nodeId) => {
     if (nodeId.startsWith("super-")) {
       graph.dropNode(nodeId);
     }
   });
+  console.timeEnd("remove-supernodes");
+
+  console.timeEnd("findShortestPairsWithSupernodes");
   return metagraphResults;
 }
 
 // connect the components into the graph.
 // this function is AI written. Write it again to learn what it does.
 function connectComponents(metagraphResults) {
+  console.time("connectComponents");
   let connectedResults = [];
 
   // Sort by distance
@@ -216,10 +242,12 @@ function connectComponents(metagraphResults) {
     }
   }
 
+  console.timeEnd("connectComponents");
   return connectedResults;
 }
 
 function createConnectingEdges(edges, connectingEdges) {
+  console.time("createConnectingEdges");
   // this function will connect all the component connecting edges
   // to the original graph and append them to the original edges array
 
@@ -257,9 +285,11 @@ function createConnectingEdges(edges, connectingEdges) {
       }
     }
   }
+  console.timeEnd("createConnectingEdges");
 }
 
 function createAugmentedEdges(edges, uniquePairs) {
+  console.time("createAugmentedEdges");
   // here we can start implementing our hierholzer's algorithm.
   // first, we get the respective paths of the unique pairs
   for (let i = 0; i < uniquePairs.length; i++) {
@@ -296,9 +326,11 @@ function createAugmentedEdges(edges, uniquePairs) {
       }
     }
   }
+  console.timeEnd("createAugmentedEdges");
 }
 
 function hierholzerAlgorithm(nodes, edges) {
+  console.time("hierholzerAlgorithm");
   // This is where we write our Euler circuit algorithm.
   let stack = [];
   let path = [];
@@ -311,6 +343,7 @@ function hierholzerAlgorithm(nodes, edges) {
     if (stack.length == 0) {
       done = true;
       console.log("This is the path", path);
+      console.timeEnd("hierholzerAlgorithm");
       return path;
       // console.log("this is the total distance", totalDistance);
 
@@ -339,6 +372,7 @@ function hierholzerAlgorithm(nodes, edges) {
 
 // generated by AI
 function generateGPX(pathNodes) {
+  console.time("generateGPX");
   const gpxHeader = `<?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="YourApp" xmlns="http://www.topografix.com/GPX/1/1">
   <trk>
@@ -358,10 +392,13 @@ function generateGPX(pathNodes) {
     })
     .join("\n");
 
-  return gpxHeader + "\n" + trackPoints + "\n" + gpxFooter;
+  const result = gpxHeader + "\n" + trackPoints + "\n" + gpxFooter;
+  console.timeEnd("generateGPX");
+  return result;
 }
 
 function downloadGPX(gpxString, filename = "route.gpx") {
+  console.time("downloadGPX");
   const blob = new Blob([gpxString], { type: "application/gpx+xml" });
   const url = URL.createObjectURL(blob);
 
@@ -378,9 +415,13 @@ function downloadGPX(gpxString, filename = "route.gpx") {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, 100);
+  console.timeEnd("downloadGPX");
 }
 
-function expandAugmentedEdges() {}
+function expandAugmentedEdges() {
+  console.time("expandAugmentedEdges");
+  console.timeEnd("expandAugmentedEdges");
+}
 // implement a filter function that sorts by several factors including temp, etc.
 window.implementCE1Algorithm = implementCE1Algorithm;
 // window.implementAlgorithm2 = implementAlgorithm2;

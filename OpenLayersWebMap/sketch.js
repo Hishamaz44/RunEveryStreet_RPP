@@ -260,6 +260,7 @@ function drawMask() {
 function getOverpassData() {
   //load nodes and edge map data in XML format from OpenStreetMap via the Overpass API
   showMessage("Loading map data…");
+
   canvas.position(0, 34); // start canvas just below logo image
   bestroute = null;
   totaluniqueroads = 0;
@@ -278,6 +279,7 @@ function getOverpassData() {
   dataminlon = extent[0] + (extent[2] - extent[0]) * margin;
   datamaxlat = extent[3] - (extent[3] - extent[1]) * margin;
   datamaxlon = extent[2] - (extent[2] - extent[0]) * margin;
+
   let OverpassURL = "https://overpass-api.de/api/interpreter?data=";
   let overpassquery =
     "(way({{bbox}})['highway']['highway' !~ 'trunk']['highway' !~ 'motorway']['highway' !~ 'motorway_link']['highway' !~ 'raceway']['highway' !~ 'proposed']['highway' !~ 'construction']['highway' !~ 'service']['highway' !~ 'elevator']['footway' !~ 'crossing']['footway' !~ 'sidewalk']['foot' !~ 'no']['access' !~ 'private']['access' !~ 'no'];node(w)({{bbox}}););out;";
@@ -288,20 +290,17 @@ function getOverpassData() {
 
   //Fetch data from overpass URL
   OverpassURL = OverpassURL + encodeURI(overpassquery);
+
   httpGet(OverpassURL, "text", false, function (response) {
+    console.log("code is going to");
     let OverpassResponse = response;
     var parser = new DOMParser();
     OSMxml = parser.parseFromString(OverpassResponse, "text/xml");
     // parse nodes and edges
+
     parseUnvisitedNodes(OSMxml);
     parseUnvisitedEdges(OSMxml);
-    // graphologyGraph = createGraph2(nodes, edges);
-    // console.log(
-    //   "This is the graphology graph from the unvisited edges: ",
-    //   graphologyGraph
-    // );
-
-    // implementAlgorithm();
+    console.log(nodes);
     nodes.forEach((node) => {
       node.x = map(node.lon, mapminlon, mapmaxlon, 0, mapWidth);
       node.y = map(node.lat, mapminlat, mapmaxlat, mapHeight, 0);
