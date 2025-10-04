@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="YourApp" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Route</name>
+    <trkseg>
+      <trkpt lat="51.8200357" lon="10.3344874">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8202220" lon="10.3340105">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8204139" lon="10.3335733">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8205054" lon="10.3333625">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8205378" lon="10.3332595">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8205611" lon="10.3331577">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8205378" lon="10.3332595">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8205054" lon="10.3333625">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8204139" lon="10.3335733">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8202220" lon="10.3340105">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8199305" lon="10.3340440">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8198101" lon="10.3339198">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8197478" lon="10.3338566">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8197097" lon="10.3338202">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8196678" lon="10.3337789">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8196105" lon="10.3337195">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8196678" lon="10.3337789">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8197097" lon="10.3338202">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8196616" lon="10.3339425">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8197097" lon="10.3338202">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8197478" lon="10.3338566">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8198101" lon="10.3339198">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8199305" lon="10.3340440">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8202588" lon="10.3343548">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8204628" lon="10.3345608">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8202588" lon="10.3343548">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8200357" lon="10.3344874">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8198545" lon="10.3349661">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8200357" lon="10.3344874">
+        <ele>0</ele>
+      </trkpt>
+
+    </trkseg>
+  </trk>
+</gpx>

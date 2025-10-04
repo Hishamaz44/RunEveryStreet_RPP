@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="YourApp" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk>
+    <name>Route</name>
+    <trkseg>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8199305" lon="10.3340440">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8202220" lon="10.3340105">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8200357" lon="10.3344874">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8202588" lon="10.3343548">
+        <ele>0</ele>
+      </trkpt>
+      <trkpt lat="51.8201269" lon="10.3342467">
+        <ele>0</ele>
+      </trkpt>
+
+    </trkseg>
+  </trk>
+</gpx>
