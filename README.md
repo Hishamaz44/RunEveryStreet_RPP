@@ -1,10 +1,6 @@
 # RunEveryStreet RPP
 
-A web-based application for route planning and GPX analysis using OpenLayers and various graph algorithms.
-
-## 🚀 Live Demo
-
-**Try it now:** [https://Hishamaz44.github.io/RunEveryStreet_RPP/OpenLayersWebMap](https://Hishamaz44.github.io/RunEveryStreet_RPP/OpenLayersWebMap)
+A web-based application for solving the RPP using OpenLayers and various graph algorithms.
 
 ## ✨ Features
 
@@ -16,6 +12,8 @@ A web-based application for route planning and GPX analysis using OpenLayers and
 - 🎯 Vector layer visualization controls
 
 ## 🛠️ Local Development
+
+This project is meant to be run locally with Vite's development server
 
 1. **Clone the repository:**
 
@@ -37,14 +35,6 @@ A web-based application for route planning and GPX analysis using OpenLayers and
    ```
 
 4. **Open your browser to:** `http://localhost:3000/RunEveryStreet_RPP/OpenLayersWebMap`
-
-## 📦 Build for Production
-
-```bash
-npm run build
-```
-
-The built files will be in the `dist` directory.
 
 ## 🎮 How to Use
 
