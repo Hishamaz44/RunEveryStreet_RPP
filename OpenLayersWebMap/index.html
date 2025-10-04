@@ -115,6 +115,7 @@
 	<div id="map" class="map"></div>
 	<input type="file" id="gpxFile" accept=".gpx" multiple style="position:fixed;top:60px;right:0px;z-index:1000;">
 	<input type="file" id="csvFile" accept=".csv" multiple style="position:fixed;top:90px;right:0px;z-index:1000;">
+	<input type="file" id="unvisitedGpxFile" accept=".gpx" multiple style="position:fixed;top:120px;right:0px;z-index:1000;">
 
 	<!-- NEW: Complete Filter Controls Panel - Bottom Left -->
 <div id="filterPanel" style="position:fixed;bottom:10px;left:10px;z-index:1000;background-color:rgba(56,7,2,0.9);color:white;padding:15px;border-radius:5px;width:340px;max-height:400px;overflow-y:auto;font-family:'Lucida Sans Unicode', 'Lucida Grande', sans-serif;font-size:12px;display:none;">
@@ -200,6 +201,13 @@
 <button id="applyAlgorithm" style="position:fixed;top:150px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply CE1 Algorithm</button>
 <button id="applyECEAlgorithm" style="position:fixed;top:190px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply ECE Algorithm</button>
 <button id="applyCE2Algorithm" style="position:fixed;top:230px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply CE2 Algorithm</button>
+<button id="exportGraphData" style="position:fixed;top:270px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Export Graph Data</button>
+<button id="importGraphData" style="position:fixed;top:310px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Import Graph Data</button>
+<button id="applyGreedyAlgorithm" style="position:fixed;top:350px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply Greedy Algorithm</button>
+<button id="stopGreedyAlgorithm" style="position:fixed;top:390px;right:10px;z-index:1000;background-color:#cc0000;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;display:none;">Stop Greedy Algorithm</button>
+<button id="applySimpleGreedyAlgorithm" style="position:fixed;top:430px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply Simple Greedy</button>
+<button id="stopSimpleGreedyAlgorithm" style="position:fixed;top:470px;right:10px;z-index:1000;background-color:#cc0000;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;display:none;">Stop Simple Greedy</button>
+<button id="exportMetrics" style="position:fixed;top:510px;right:10px;z-index:1000;background-color:#006600;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Export Metrics</button>
 
 	<!-- Load your modules -->
 	<script type="module" src="graphConverter.js"></script>
@@ -214,6 +222,9 @@
 	<script src="Edge.js"></script>
 	<script src="Node1.js"></script>
 	<script src="Route.js"></script>
+	<script src="GreedyAlgorithm.js"></script>
+	<script src="SimpleGreedyAlgorithm.js"></script>
+	<script src="MetricsDisplay.js"></script>
 	<script src="sketch.js"></script>
 </body>
 </html>

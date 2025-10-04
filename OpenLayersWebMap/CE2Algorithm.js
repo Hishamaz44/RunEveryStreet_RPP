@@ -11,9 +11,6 @@ function implementCE2Algorithm(Graph) {
   let uniquePairs = [];
   let SubgraphNodes = [];
   let SubgraphEdges = [];
-  // let tempNodes = [];
-  // let tempEdges = [];
-  // let shortestPathComponents = [];
   let shortestPathComponents2 = [];
 
   // 1 add nodes to subgraph
@@ -45,16 +42,19 @@ function implementCE2Algorithm(Graph) {
   console.timeEnd("add-edges-to-subgraph");
 
   console.time("create-disconnected-graph");
-  let disconnectedGraphologyGraph = createGraph2(SubgraphNodes, SubgraphEdges);
+  let disconnectedGraphologyGraph = createGraph3(SubgraphNodes, SubgraphEdges);
   console.timeEnd("create-disconnected-graph");
 
   // 3 find whether the Graph is connected or not using Graphology
   console.time("check-connectivity");
+
   let components = isConnected(disconnectedGraphologyGraph);
+
   console.timeEnd("check-connectivity");
 
   // 3.5 FIRST odd node detection - for component connection via supernodes
   console.time("first-odd-node-detection");
+
   let oddNodesForComponents = []; // First set of odd nodes
   let oddNodeIdsForComponents = new Set(); // Set of odd node IDs for quick lookup
 
@@ -64,27 +64,59 @@ function implementCE2Algorithm(Graph) {
       oddNodeIdsForComponents.add(SubgraphNodes[i].nodeId.toString());
     }
   }
-  console.log("Odd nodes for component connection:", oddNodesForComponents);
-  console.log(
-    "Odd node IDs for component connection:",
-    Array.from(oddNodeIdsForComponents)
-  );
+  // console.log("Odd nodes for component connection:", oddNodesForComponents);
+  // console.log(
+  //   "Odd node IDs for component connection:",
+  //   Array.from(oddNodeIdsForComponents)
+  // );
   console.timeEnd("first-odd-node-detection");
 
   if (components.length > 1) {
     // 4 find shortest path between the components using supernodes connected only to odd nodes
-    shortestPathComponents2 = findShortestPairsWithSupernodes(
-      components,
+    // shortestPathComponents2 = findShortestPairsWithSupernodes(
+    //   components,
+    //   Graph,
+    //   oddNodeIdsForComponents // Pass the first set of odd node IDs
+    // );
+
+    shortestPathComponents2 = dijkstraSupernodeSingleSource(
       Graph,
-      oddNodeIdsForComponents // Pass the first set of odd node IDs
+      components,
+      oddNodeIdsForComponents
     );
 
     // 5 connect the shortest paths between the components using a version of Kruskal
+    // console.log("=== DEBUGGING COMPONENT CONNECTION ===");
+    // console.log(`Number of components found: ${components.length}`);
+    // console.log(
+    //   `Number of paths found between components: ${shortestPathComponents2.length}`
+    // );
+    // console.log(
+    //   "Shortest paths details:",
+    //   shortestPathComponents2.map((p) => ({
+    //     from: p.componentFrom,
+    //     to: p.componentTo,
+    //     distance: p.distance,
+    //     pathLength: p.path.length,
+    //     path: p.path,
+    //   }))
+    // );
+
     let connectedResults = connectComponents(shortestPathComponents2);
-    console.log(
-      "This are the edges that will need to be connected to create a conneceted graph",
-      connectedResults
-    );
+
+    // console.log("=== KRUSKAL ALGORITHM RESULTS ===");
+    // console.log(
+    //   `Number of edges selected by Kruskal: ${connectedResults.length}`
+    // );
+    // console.log(
+    //   "Selected connecting edges:",
+    //   connectedResults.map((e) => ({
+    //     from: e.componentFrom,
+    //     to: e.componentTo,
+    //     distance: e.distance,
+    //     pathLength: e.path.length,
+    //   }))
+    // );
 
     createConnectingEdges(SubgraphEdges, connectedResults);
   }
@@ -99,33 +131,37 @@ function implementCE2Algorithm(Graph) {
       oddNodes.push(SubgraphNodes[i]);
     }
   }
-  console.log(
-    "Odd nodes AFTER component connection (for main matching):",
-    oddNodes
-  );
-  console.log(
-    "First detection found:",
-    oddNodesForComponents.length,
-    "odd nodes"
-  );
-  console.log("Second detection found:", oddNodes.length, "odd nodes");
+  // console.log(
+  //   "Odd nodes AFTER component connection (for main matching):",
+  //   oddNodes
+  // );
+  // console.log(
+  //   "First detection found:",
+  //   oddNodesForComponents.length,
+  //   "odd nodes"
+  // );
+  // console.log("Second detection found:", oddNodes.length, "odd nodes");
   console.timeEnd("second-odd-node-detection");
 
   // 7 get all odd node pair distances (using the recalculated oddNodes)
   console.time("calculate-odd-node-pairs");
-  for (let i = 0; i < oddNodes.length; i++) {
-    for (let j = i + 1; j < oddNodes.length; j++) {
-      if (oddNodes[i].nodeId !== oddNodes[j].nodeId) {
-        const result = dijkstraGraphology(
-          Graph,
-          oddNodes[i].nodeId.toString(),
-          oddNodes[j].nodeId.toString()
-        );
 
-        if (result) oddNodePairs.push(result);
-      }
-    }
-  }
+  // for (let i = 0; i < oddNodes.length; i++) {
+  //   for (let j = i + 1; j < oddNodes.length; j++) {
+  //     if (oddNodes[i].nodeId !== oddNodes[j].nodeId) {
+  //       const result = dijkstraGraphology(
+  //         Graph,
+  //         oddNodes[i].nodeId.toString(),
+  //         oddNodes[j].nodeId.toString()
+  //       );
+
+  //       if (result) oddNodePairs.push(result);
+  //     }
+  //   }
+  // }
+
+  oddNodePairs = dijkstraGraphologySingleSource(Graph, oddNodes);
+
   console.timeEnd("calculate-odd-node-pairs");
 
   //8 Here we find the shortest distances between all odd nodes, and pair them together
@@ -142,17 +178,55 @@ function implementCE2Algorithm(Graph) {
       uniquePairs.push(oddNodePairs[i]);
     }
   }
-  console.log("These are the unique pairs of the odd nodes", uniquePairs);
+  // console.log("These are the unique pairs of the odd nodes", uniquePairs);
   console.timeEnd("find-unique-pairs");
 
   // 9. Here we create the augmented edges
+  // console.log("=== SECOND PHASE: CREATING AUGMENTED EDGES ===");
+  // console.log(`Number of unique pairs for augmentation: ${uniquePairs.length}`);
+  // console.log(`SubgraphEdges before augmentation: ${SubgraphEdges.length}`);
+
   createAugmentedEdges(SubgraphEdges, uniquePairs);
+
+  // console.log(`SubgraphEdges after augmentation: ${SubgraphEdges.length}`);
   // 10. find the Eulerian tour.
-  const nodeList = hierholzerAlgorithm(SubgraphNodes, SubgraphEdges);
+  const { nodeList, totalDistance } = hierholzerAlgorithm(
+    SubgraphNodes,
+    SubgraphEdges
+  );
   console.log("Subgraph edges after adding augmented edges", SubgraphEdges);
-  console.log(nodeList);
+  // console.log("Node list:", nodeList);
+  // console.log("Total distance:", totalDistance);
+
+  // Set global variables for metrics system
+  if (nodeList && nodeList.length > 0) {
+    bestroute = new Route(nodeList[0], null);
+    // Add all waypoints to the route
+    for (let i = 1; i < nodeList.length; i++) {
+      const prevNode = nodeList[i - 1];
+      const currentNode = nodeList[i];
+      const distance = calcdistance(
+        prevNode.lat,
+        prevNode.lon,
+        currentNode.lat,
+        currentNode.lon
+      );
+      bestroute.addWaypoint(currentNode, distance);
+    }
+    // Use the calculated totalDistance from Hierholzer algorithm
+    bestdistance = totalDistance;
+    bestroute.distance = totalDistance; // Also set the route's distance property
+
+    // console.log("CE2 - Set bestdistance to:", bestdistance);
+    // console.log("CE2 - Set bestroute.distance to:", bestroute.distance);
+    // console.log(
+    //   "CE2 - Set bestroute with waypoints:",
+    //   bestroute.waypoints.length
+    // );
+  }
+
   const gpx = generateGPX(nodeList);
-  downloadGPX(gpx, "RPPtest");
+  downloadGPX(gpx, "RPP_CE2");
   console.timeEnd("implementCE2Algorithm");
 }
 
@@ -165,13 +239,14 @@ function findShortestPairsWithSupernodes(
   console.time("findShortestPairsWithSupernodes");
   const metagraphResults = [];
   let edgeId = 0;
+  const usedOddNodes = new Set(); // Track which odd nodes have been used
 
-  console.log("=== COMPONENT CONNECTION VIA ODD NODES ===");
-  console.log("Components:", components);
-  console.log(
-    "Odd node IDs for component connection:",
-    Array.from(oddNodeIdsForComponents)
-  );
+  // console.log("=== COMPONENT CONNECTION VIA ODD NODES ===");
+  // console.log("Components:", components);
+  // console.log(
+  //   "Odd node IDs for component connection:",
+  //   Array.from(oddNodeIdsForComponents)
+  // );
 
   // Step 1: Add super-nodes and zero-weight edges to odd nodes only
   console.time("add-supernodes");
@@ -184,10 +259,10 @@ function findShortestPairsWithSupernodes(
       oddNodeIdsForComponents.has(nodeId)
     );
 
-    console.log(`Component ${i}:`);
-    console.log(`  Total nodes: ${components[i].length}`);
-    console.log(`  Odd nodes: ${oddNodesInComponent.length}`);
-    console.log(`  Odd node IDs in component: ${oddNodesInComponent}`);
+    // console.log(`Component ${i}:`);
+    // console.log(`  Total nodes: ${components[i].length}`);
+    // console.log(`  Odd nodes: ${oddNodesInComponent.length}`);
+    // console.log(`  Odd node IDs in component: ${oddNodesInComponent}`);
 
     // Connect supernode only to odd nodes within this component
     for (const nodeId of oddNodesInComponent) {
@@ -195,12 +270,12 @@ function findShortestPairsWithSupernodes(
         graph.addUndirectedEdge(superId, nodeId, {
           distance: 0,
         });
-        console.log(`  ✓ Connected super-${i} to odd node ${nodeId}`);
+        // console.log(`  ✓ Connected super-${i} to odd node ${nodeId}`);
       } catch (error) {
-        console.warn(
-          `  ✗ Could not connect super-${i} to node ${nodeId}:`,
-          error
-        );
+        // console.warn(
+        //   `  ✗ Could not connect super-${i} to node ${nodeId}:`,
+        //   error
+        // );
       }
     }
 
@@ -214,9 +289,9 @@ function findShortestPairsWithSupernodes(
           graph.addUndirectedEdge(superId, components[i][0], {
             distance: 0,
           });
-          console.log(
-            `  ✓ Connected super-${i} to first node ${components[i][0]} (fallback)`
-          );
+          // console.log(
+          //   `  ✓ Connected super-${i} to first node ${components[i][0]} (fallback)`
+          // );
         } catch (error) {
           console.warn(
             `  ✗ Could not connect super-${i} to fallback node:`,
@@ -238,25 +313,76 @@ function findShortestPairsWithSupernodes(
       const result = dijkstraGraphology(graph, superFrom, superTo);
 
       if (result && result.path) {
-        // remove all super nodes from path so only the normal path remains
-        result.path = result.path.slice(1, -1);
-        console.log(`Path between super-${i} and super-${j}:`, result.path);
+        // Store the original path to identify which supernode edges were used
+        const originalPath = [...result.path];
 
-        // assign normal nodes to from and to nodes
-        let from = result.path[0];
-        let to = result.path[result.path.length - 1];
+        // Identify which odd nodes would be used
+        const usedFromNode = originalPath[1]; // First normal node after superFrom
+        const usedToNode = originalPath[originalPath.length - 2]; // Last normal node before superTo
 
-        if (result && from && to) {
-          console.log(
-            `✓ Shortest path between components ${i} and ${j} found via odd nodes`
-          );
-          metagraphResults.push({
-            id: edgeId++,
-            distance: result.distance,
-            from: from,
-            to: to,
-            path: result.path,
-          });
+        // Check if these odd nodes have already been used
+        if (!usedOddNodes.has(usedFromNode) && !usedOddNodes.has(usedToNode)) {
+          //remove all super nodes from path so only the normal path remains
+          result.path = result.path.slice(1, -1);
+          // console.log(`Path between super-${i} and super-${j}:`, result.path);
+
+          // assign normal nodes to from and to nodes
+          let from = result.path[0];
+          let to = result.path[result.path.length - 1];
+
+          if (result && from && to) {
+            // console.log(
+            //   `✓ Shortest path between components ${i} and ${j} found via odd nodes`
+            // );
+
+            // Mark these odd nodes as used
+            usedOddNodes.add(usedFromNode);
+            usedOddNodes.add(usedToNode);
+            // console.log(
+            //   `  ✓ Marked odd nodes ${usedFromNode} and ${usedToNode} as used`
+            // );
+
+            // Remove the specific supernode edges that were used in this path
+            try {
+              // Remove the supernode edge that was used from component i
+              if (graph.hasEdge(superFrom, usedFromNode)) {
+                graph.dropEdge(superFrom, usedFromNode);
+                // console.log(
+                //   `  ✗ Removed used edge: ${superFrom} -> ${usedFromNode}`
+                // );
+              }
+
+              // Remove the supernode edge that was used from component j
+              if (graph.hasEdge(superTo, usedToNode)) {
+                graph.dropEdge(superTo, usedToNode);
+                // console.log(
+                //   `  ✗ Removed used edge: ${superTo} -> ${usedToNode}`
+                // );
+              }
+            } catch (error) {
+              console.warn(`Could not remove used supernode edges:`, error);
+            }
+
+            metagraphResults.push({
+              id: edgeId++,
+              distance: result.distance,
+              from: from,
+              to: to,
+              path: result.path,
+              // Add component information for proper MST calculation
+              componentFrom: i,
+              componentTo: j,
+            });
+          }
+        } else {
+          // console.log(
+          //   `  ⚠️ Skipping path between components ${i} and ${j} - odd nodes already used`
+          // );
+          // console.log(
+          //   `    Would use: ${usedFromNode} (used: ${usedOddNodes.has(
+          //     usedFromNode
+          //   )}), ${usedToNode} (used: ${usedOddNodes.has(usedToNode)})`
+          // );
         }
       }
     }
@@ -272,7 +398,7 @@ function findShortestPairsWithSupernodes(
   });
   console.timeEnd("remove-supernodes");
 
-  console.log("=== COMPONENT CONNECTION COMPLETE ===");
+  // console.log("=== COMPONENT CONNECTION COMPLETE ===");
   console.timeEnd("findShortestPairsWithSupernodes");
   return metagraphResults;
 }
@@ -285,20 +411,34 @@ function connectComponents(metagraphResults) {
 
   // Sort by distance
   metagraphResults.sort((a, b) => a.distance - b.distance);
-  console.log(metagraphResults);
+  // console.log("=== DEBUGGING CONNECTCOMPONENTS ===");
+  // console.log("metagraphResults:", metagraphResults);
+  // console.log("Number of paths found:", metagraphResults.length);
 
-  // Map string IDs to integer indices
-  const idToIndex = new Map();
+  // Map component IDs to integer indices (this is the key fix!)
+  const componentToIndex = new Map();
   let index = 0;
 
   for (const edge of metagraphResults) {
-    if (!idToIndex.has(edge.from)) {
-      idToIndex.set(edge.from, index++);
+    if (!componentToIndex.has(edge.componentFrom)) {
+      componentToIndex.set(edge.componentFrom, index++);
+      // console.log(
+      //   `  Mapping component ${edge.componentFrom} to index ${index - 1}`
+      // );
     }
-    if (!idToIndex.has(edge.to)) {
-      idToIndex.set(edge.to, index++);
+    if (!componentToIndex.has(edge.componentTo)) {
+      componentToIndex.set(edge.componentTo, index++);
+      // console.log(
+      //   `  Mapping component ${edge.componentTo} to index ${index - 1}`
+      // );
     }
   }
+
+  // console.log("Total unique components:", index);
+  // console.log(
+  //   "Component to index mapping:",
+  //   Array.from(componentToIndex.entries())
+  // );
 
   // Union-Find setup
   // initializes all disconnected components as their own parent
@@ -321,15 +461,30 @@ function connectComponents(metagraphResults) {
   }
 
   // Kruskal loop
+  // console.log("=== KRUSKAL MST PROCESS ===");
   for (let i = 0; i < metagraphResults.length; i++) {
     const edge = metagraphResults[i];
-    const fromIndex = idToIndex.get(edge.from);
-    const toIndex = idToIndex.get(edge.to);
+    const fromCompIndex = componentToIndex.get(edge.componentFrom);
+    const toCompIndex = componentToIndex.get(edge.componentTo);
 
-    if (union(fromIndex, toIndex)) {
+    // console.log(
+    //   `Considering edge: Component ${edge.componentFrom} (${fromCompIndex}) -> Component ${edge.componentTo} (${toCompIndex}), distance: ${edge.distance}`
+    // );
+    // console.log(`  via nodes: ${edge.from} -> ${edge.to}`);
+
+    if (union(fromCompIndex, toCompIndex)) {
+      // console.log(
+      //   `  ✓ ACCEPTED - Connected components ${edge.componentFrom} and ${edge.componentTo}`
+      // );
       connectedResults.push(edge);
+    } else {
+      // console.log(
+      //   `  ✗ REJECTED - Would create cycle between components ${edge.componentFrom} and ${edge.componentTo}`
+      // );
     }
   }
+
+  // console.log(`Final MST has ${connectedResults.length} edges`);
 
   console.timeEnd("connectComponents");
   return connectedResults;
@@ -337,12 +492,24 @@ function connectComponents(metagraphResults) {
 
 function createConnectingEdges(edges, connectingEdges) {
   console.time("createConnectingEdges");
-  // this function will connect all the component connecting edges
-  // to the original graph and append them to the original edges array
+  // console.log("=== CREATING CONNECTING EDGES ===");
+  // console.log(
+  //   `Number of connecting paths to process: ${connectingEdges.length}`
+  // );
+
+  let totalEdgesAdded = 0;
+  let edgesBeforeAddition = edges.length;
 
   for (let i = 0; i < connectingEdges.length; i++) {
     let path = connectingEdges[i].path;
     let totalDistance = connectingEdges[i].distance;
+
+    // console.log(
+    //   `Processing path ${i + 1}/${connectingEdges.length}: length ${
+    //     path.length
+    //   }, will create ${path.length - 1} edges`
+    // );
+    // console.log(`  Path nodes: ${path.join(" -> ")}`);
 
     // Create edges for each step in the connecting path
     for (let j = 0; j < path.length - 1; j++) {
@@ -371,9 +538,17 @@ function createConnectingEdges(edges, connectingEdges) {
         edge.distance = edgeDistance;
         edge.augmentedPath = path; // Store the full path for reference
         edges.push(edge);
+        totalEdgesAdded++;
       }
     }
   }
+
+  // console.log(`=== CONNECTING EDGES SUMMARY ===`);
+  // console.log(`Edges before addition: ${edgesBeforeAddition}`);
+  // console.log(`Total connecting edges added: ${totalEdgesAdded}`);
+  // console.log(`Edges after addition: ${edges.length}`);
+  // console.log(`Expected total: ${edgesBeforeAddition + totalEdgesAdded}`);
+
   console.timeEnd("createConnectingEdges");
 }
 
@@ -431,12 +606,10 @@ function hierholzerAlgorithm(nodes, edges) {
   while (!done) {
     if (stack.length == 0) {
       done = true;
-      console.log("This is the path", path);
+      // console.log("This is the path", path);
+      // console.log("Total distance calculated:", totalDistance);
       console.timeEnd("hierholzerAlgorithm");
-      return path;
-      // console.log("this is the total distance", totalDistance);
-
-      break;
+      return { nodeList: path, totalDistance: totalDistance };
     }
     let currentNode = stack[stack.length - 1];
     let unvisitedEdge;
@@ -457,6 +630,9 @@ function hierholzerAlgorithm(nodes, edges) {
       path.push(temp);
     }
   }
+
+  // Fallback return (shouldn't reach here normally)
+  return { nodeList: path, totalDistance: totalDistance };
 }
 
 // generated by AI

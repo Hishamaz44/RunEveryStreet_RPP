@@ -15,11 +15,29 @@ function displayGPXTrack(nodes, edges) {
   });
 
   // Only add nodes that are part of visited edges
+  // Only add nodes that are part of visited edges
   nodes.forEach((node) => {
     if (nodesWithedges.has(node.nodeId)) {
       const feature = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([node.lon, node.lat])),
       });
+
+      // Add styling for the nodes
+      feature.setStyle(
+        new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 4, // Adjust this value to change node size
+            fill: new ol.style.Fill({
+              color: "blue", // You can change the color too
+            }),
+            stroke: new ol.style.Stroke({
+              color: "white",
+              width: 2,
+            }),
+          }),
+        })
+      );
+
       vectorSource.addFeature(feature);
     }
   });
@@ -38,7 +56,7 @@ function displayGPXTrack(nodes, edges) {
         new ol.style.Style({
           stroke: new ol.style.Stroke({
             color: "blue",
-            width: 3,
+            width: 5,
           }),
         })
       );

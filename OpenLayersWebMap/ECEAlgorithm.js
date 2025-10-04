@@ -39,7 +39,7 @@ function implementECEAlgorithm(Graph) {
   console.timeEnd("add-edges-to-subgraph");
 
   console.time("create-disconnected-graph");
-  let disconnectedGraphologyGraph = createGraph2(SubgraphNodes, SubgraphEdges);
+  let disconnectedGraphologyGraph = createGraph3(SubgraphNodes, SubgraphEdges);
   console.timeEnd("create-disconnected-graph");
 
   // 3 get all odd nodes from our subgraph
@@ -49,24 +49,12 @@ function implementECEAlgorithm(Graph) {
       oddNodes.push(SubgraphNodes[i]);
     }
   }
-  console.log("these are the odd nodes", oddNodes);
+  // console.log("these are the odd nodes", oddNodes);
   console.timeEnd("find-odd-nodes");
 
   // 4 get all odd node pair distances
   console.time("calculate-odd-node-pairs");
-  for (let i = 0; i < oddNodes.length; i++) {
-    for (let j = i + 1; j < oddNodes.length; j++) {
-      if (oddNodes[i].nodeId !== oddNodes[j].nodeId) {
-        const result = dijkstraGraphology(
-          Graph,
-          oddNodes[i].nodeId.toString(),
-          oddNodes[j].nodeId.toString()
-        );
-
-        if (result) oddNodePairs.push(result);
-      }
-    }
-  }
+  oddNodePairs = dijkstraGraphologySingleSource(Graph, oddNodes);
   console.timeEnd("calculate-odd-node-pairs");
 
   // 5 Here we find the shortest distances between all odd nodes
@@ -83,13 +71,13 @@ function implementECEAlgorithm(Graph) {
       uniquePairs.push(oddNodePairs[i]);
     }
   }
-  console.log(oddNodePairs);
+  // console.log(oddNodePairs);
   console.timeEnd("find-unique-pairs");
 
   // 6. Here we create the augmented edges between the odd nodes
   createAugmentedEdges(SubgraphEdges, uniquePairs);
-  console.log("Subgraph edges after adding augmented Edges: ", SubgraphEdges);
-  console.log("Subgraph nodes after adding augmented Edged: ", SubgraphNodes);
+  // console.log("Subgraph edges after adding augmented Edges: ", SubgraphEdges);
+  // console.log("Subgraph nodes after adding augmented Edged: ", SubgraphNodes);
 
   // create Graphology graph after adding the augmented edges that connect all odd nodes
   console.time("create-even-graph");
@@ -109,53 +97,41 @@ function implementECEAlgorithm(Graph) {
 
   if (components.length > 1) {
     // 7 find shortest path between the components
-    shortestPathComponents2 = findShortestPairsWithSupernodes(
-      components,
-      Graph
-    );
+    shortestPathComponents2 = dijkstraSupernodeSingleSource(Graph, components);
 
     // 8 connect the shortest paths between the components using a version of Kruskal
     let connectedResults = connectComponents(shortestPathComponents2);
-    console.log(
-      "This are the edges that will need to be connected to create a conneceted graph",
-      connectedResults
-    );
+    // console.log(
+    //   "This are the edges that will need to be connected to create a conneceted graph",
+    //   connectedResults
+    // );
 
     createConnectingEdges(SubgraphEdges, connectedResults);
   }
 
   // 9 After connecting the edges, we need to check for odd nodes again and make them even
   // we also need to reset all the previous odd node variables
-  console.log("Clearing odd node detection variables before processing");
+  // console.log("Clearing odd node detection variables before processing");
   console.time("second-odd-node-detection");
   let oddNodes2 = []; // Clear array
   let oddNodePairs2 = []; // Clear array
   let uniquePairs2 = []; // Clear array
 
   // 10 detect odd nodes
+  console.log(SubgraphNodes);
   for (let i = 0; i < SubgraphNodes.length; i++) {
     if (SubgraphNodes[i].edges.length % 2 == 1) {
       oddNodes2.push(SubgraphNodes[i]);
+      console.log("any odd nodes here?");
     }
   }
-  console.log("these are the odd nodes", oddNodes2);
+  // console.log("these are the odd nodes", oddNodes2);
   console.timeEnd("second-odd-node-detection");
 
   // 11 get all odd node pair distances
   console.time("calculate-second-odd-node-pairs");
-  for (let i = 0; i < oddNodes2.length; i++) {
-    for (let j = i + 1; j < oddNodes2.length; j++) {
-      if (oddNodes2[i].nodeId !== oddNodes2[j].nodeId) {
-        const result = dijkstraGraphology(
-          Graph,
-          oddNodes2[i].nodeId.toString(),
-          oddNodes2[j].nodeId.toString()
-        );
-
-        if (result) oddNodePairs2.push(result);
-      }
-    }
-  }
+  oddNodePairs2 = dijkstraGraphologySingleSource(Graph, oddNodes2);
+  console.log(oddNodePairs);
   console.timeEnd("calculate-second-odd-node-pairs");
 
   // 12 Here we find the shortest distances between all odd nodes, and pair them together
@@ -172,18 +148,49 @@ function implementECEAlgorithm(Graph) {
       uniquePairs2.push(oddNodePairs2[i]);
     }
   }
-  console.log(oddNodePairs2);
+  // console.log(oddNodePairs2);
   console.timeEnd("find-second-unique-pairs");
 
   // 13. Here we create the augmented edges between the odd nodes
   createAugmentedEdges(SubgraphEdges, uniquePairs2);
   // 14. Run Hierholzer
-  const nodeList = hierholzerAlgorithm(SubgraphNodes, SubgraphEdges);
+  const { nodeList, totalDistance } = hierholzerAlgorithm(
+    SubgraphNodes,
+    SubgraphEdges
+  );
   console.log("Subgraph edges after adding augmented edges", SubgraphEdges);
-  console.log(nodeList);
+  console.log("Node list:", nodeList);
+  // console.log("Total distance:", totalDistance);
+
+  // Set global variables for metrics system
+  if (nodeList && nodeList.length > 0) {
+    bestroute = new Route(nodeList[0], null);
+    // Add all waypoints to the route
+    for (let i = 1; i < nodeList.length; i++) {
+      const prevNode = nodeList[i - 1];
+      const currentNode = nodeList[i];
+      const distance = calcdistance(
+        prevNode.lat,
+        prevNode.lon,
+        currentNode.lat,
+        currentNode.lon
+      );
+      bestroute.addWaypoint(currentNode, distance);
+    }
+    // Use the calculated totalDistance from Hierholzer algorithm
+    bestdistance = totalDistance;
+    bestroute.distance = totalDistance; // Also set the route's distance property
+
+    // console.log("ECE - Set bestdistance to:", bestdistance);
+    // console.log("ECE - Set bestroute.distance to:", bestroute.distance);
+    // console.log(
+    //   "ECE - Set bestroute with waypoints:",
+    //   bestroute.waypoints.length
+    // );
+  }
 
   const gpx = generateGPX(nodeList);
-  downloadGPX(gpx, "RPPtest");
+  downloadGPX(gpx, "RPP_ECE");
   console.timeEnd("implementECEAlgorithm");
 }
 
@@ -200,12 +207,10 @@ function hierholzerAlgorithm(nodes, edges) {
   while (!done) {
     if (stack.length == 0) {
       done = true;
-      console.log("This is the path", path);
+      // console.log("This is the path", path);
+      // console.log("Total distance calculated:", totalDistance);
       console.timeEnd("hierholzerAlgorithm");
-      return path;
-      // console.log("this is the total distance", totalDistance);
-
-      break;
+      return { nodeList: path, totalDistance: totalDistance };
     }
     let currentNode = stack[stack.length - 1];
     let unvisitedEdge;
@@ -226,6 +231,9 @@ function hierholzerAlgorithm(nodes, edges) {
       path.push(temp);
     }
   }
+
+  // Fallback return (shouldn't reach here normally)
+  return { nodeList: path, totalDistance: totalDistance };
 }
 
 function createConnectingEdges(edges, connectingEdges) {
@@ -300,12 +308,12 @@ function findShortestPairsWithSupernodes(components, graph) {
       const result = dijkstraGraphology(graph, superFrom, superTo);
       // remove all super nodes from path so only the normal path remains
       result.path = result.path.slice(1, -1);
-      console.log("this is the path of the result", result.path);
+      // console.log("this is the path of the result", result.path);
       // assign normal nodes to from and to nodes
       let from = result.path[0];
       let to = result.path[result.path.length - 1];
       if (result) {
-        console.log("i think the code is not going here");
+        // console.log("i think the code is not going here");
         metagraphResults.push({
           id: edgeId++,
           distance: result.distance,
