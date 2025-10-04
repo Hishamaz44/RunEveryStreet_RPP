@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>RunEveryStreet</title>
+
+	<script src="libraries/p5.js"></script>
+	<script src="libraries/p5.dom.js"></script>
+	<script src="libraries/p5.sound.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/css/ol.css" type="text/css">
+	<!--script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js"></script>-->
+	<script src="https://cdn.jsdelivr.net/npm/graphlib@2.1.8/dist/graphlib.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-graph-algorithms@1.5.9/dist/graph-algorithms.min.js"></script>
+
+
+	<script src="https://cdn.jsdelivr.net/npm/ol@v7.1.0/dist/ol.js"></script>
+    <style>
+      .map {
+        height: 100%;
+        width: 100%;
+		position:fixed;
+      }
+	  a:link {
+		color: white;
+		background-color: transparent;
+		text-decoration: none;
+		}
+
+		a:visited {
+		color: white;
+		background-color: transparent;
+		text-decoration: none;
+		}
+
+		a:hover {
+		color: white;
+		background-color: transparent;
+		text-decoration: underline;
+		cursor: pointer;
+		}
+
+		a:active {
+		color: white;
+		background-color: transparent;
+		text-decoration: none;
+		}
+		body {
+			margin:0;
+			padding:0;
+			overflow: hidden;
+		}
+		canvas {
+			margin:auto;
+		}
+		.layer-button{
+			position:fixed;width:150px;top:32px;right:100px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;
+		} 
+
+		.filter-section {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #555;
+  padding-bottom: 10px;
+}
+
+.filter-row {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-row label {
+  flex: 1;
+  margin-right: 10px;
+  font-size: 11px;
+}
+
+.filter-row input {
+  margin-left: 5px;
+  padding: 2px 5px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+#filterPanel h4 {
+  margin: 0 0 8px 0;
+  color: #ffcc00;
+  font-size: 13px;
+}
+
+#filterPanel h5 {
+  margin: 8px 0 5px 0;
+  color: #cccccc;
+  font-size: 11px;
+}
+
+</style>
+  <script type="module" crossorigin src="/RunEveryStreet_RPP/assets/index-T1yE26Yp.js"></script>
+</head>
+<body style="background-color:black;">
+	<div style="background-color:#380702;"><img src="/RunEveryStreet_RPP/assets/logosmalllit-DMhPjefs.png" /></div>
+	<div style='position:fixed;width:120px;top:32px;right:0px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;'>
+		<a href="https://codeberg.org/lejun/RunEveryStreet/">Source Code</a>
+	</div>
+	<div></div>
+	<div style='position:fixed;width:40px;top:32px;right:0px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;'>
+		<a href=".">Restart</a>
+	</div>
+	<div >
+		<a class="layer-button" id="toggle-layer">Vector Layer Visibility</a>
+	</div>
+	<div id="map" class="map"></div>
+	<input type="file" id="gpxFile" accept=".gpx" multiple style="position:fixed;top:60px;right:0px;z-index:1000;">
+	<input type="file" id="csvFile" accept=".csv" multiple style="position:fixed;top:90px;right:0px;z-index:1000;">
+
+	<!-- NEW: Complete Filter Controls Panel - Bottom Left -->
+<div id="filterPanel" style="position:fixed;bottom:10px;left:10px;z-index:1000;background-color:rgba(56,7,2,0.9);color:white;padding:15px;border-radius:5px;width:340px;max-height:400px;overflow-y:auto;font-family:'Lucida Sans Unicode', 'Lucida Grande', sans-serif;font-size:12px;display:none;">
+  <h3 style="margin-top:0;color:#ffcc00;">Data Filters</h3>
+  
+  <!-- Environmental Metrics -->
+  <div class="filter-section">
+    <h4>Environmental Metrics</h4>
+    <div class="filter-row">
+      <label>Altitude (m):</label>
+      <input type="number" id="minAltitude" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxAltitude" placeholder="Max" style="width:70px;">
+    </div>
+    <div class="filter-row">
+      <label>Temperature (°C):</label>
+      <input type="number" id="minTemperature" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxTemperature" placeholder="Max" style="width:70px;">
+    </div>
+    <div class="filter-row">
+      <label>Humidity (%):</label>
+      <input type="number" id="minHumidity" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxHumidity" placeholder="Max" style="width:70px;">
+    </div>
+    <div class="filter-row">
+      <label>Pressure (hPa):</label>
+      <input type="number" id="minPressure" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxPressure" placeholder="Max" style="width:70px;">
+    </div>
+  </div>
+
+  <!-- Signal Strength Metrics -->
+  <div class="filter-section">
+    <h4>Signal Strength (RSSI)</h4>
+    <div class="filter-row">
+      <label>GW1-IGE RSSI:</label>
+      <input type="number" id="minGW1RSSI" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxGW1RSSI" placeholder="Max" style="width:70px;">
+    </div>
+    <div class="filter-row">
+      <label>GW2-IEI RSSI:</label>
+      <input type="number" id="minGW2RSSI" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxGW2RSSI" placeholder="Max" style="width:70px;">
+    </div>
+    <div class="filter-row">
+      <label>GW3-IFI RSSI:</label>
+      <input type="number" id="minGW3RSSI" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxGW3RSSI" placeholder="Max" style="width:70px;">
+    </div>
+  </div>
+
+  <!-- Signal-to-Noise Ratio Metrics -->
+  <div class="filter-section">
+    <h4>Signal-to-Noise Ratio (SNR)</h4>
+    <div class="filter-row">
+      <label>GW1-IGE SNR:</label>
+      <input type="number" id="minGW1SNR" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxGW1SNR" placeholder="Max" style="width:70px;">
+    </div>
+    <div class="filter-row">
+      <label>GW2-IEI SNR:</label>
+      <input type="number" id="minGW2SNR" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxGW2SNR" placeholder="Max" style="width:70px;">
+    </div>
+    <div class="filter-row">
+      <label>GW3-IFI SNR:</label>
+      <input type="number" id="minGW3SNR" placeholder="Min" style="width:70px;">
+      <input type="number" id="maxGW3SNR" placeholder="Max" style="width:70px;">
+    </div>
+  </div>
+
+  <!-- Filter Action Buttons -->
+  <div style="margin-top:15px;">
+    <button id="applyFilters" style="background-color:#ffcc00;color:#380702;border:none;padding:8px 15px;border-radius:3px;cursor:pointer;margin-right:5px;">Apply Filters</button>
+    <button id="clearFilters" style="background-color:#666;color:white;border:none;padding:8px 15px;border-radius:3px;cursor:pointer;margin-right:5px;">Clear</button>
+    <button id="useFilteredCoords" style="background-color:#00aa00;color:white;border:none;padding:8px 15px;border-radius:3px;cursor:pointer;">Use Filtered Data</button>
+  </div>
+  
+  <div id="filterResults" style="margin-top:10px;font-size:11px;color:#cccccc;"></div>
+</div>
+
+<!-- Toggle button for filter panel - Bottom Left -->
+<button id="toggleFilters" style="position:fixed;bottom:10px;left:10px;z-index:1001;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Show Filters</button>
+	<button id="resetButton" style="position:fixed;top:150px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply Hierholzer Algorithm</button>
+
+	<!-- Load your modules -->
+	<script src="Edge.js"></script>
+	<script src="Node1.js"></script>
+	<script src="Route.js"></script>
+	<script src="sketch.js"></script>
+</body>
+</html>

@@ -1,6 +1,19 @@
 // This will do some tests on the extracted gpx files and will be AI generated
 const fs = require("fs");
-const DOMParser = require("xmldom").DOMParser;
+const path = require("path");
+const { JSDOM } = require("jsdom");
+const dom = new JSDOM("");
+const DOMParser = new dom.window.DOMParser();
+
+function validateGPXContent(gpxContent) {
+  if (!gpxContent || typeof gpxContent !== "string") {
+    throw new Error("Invalid GPX content: content must be a non-empty string");
+  }
+  if (!gpxContent.includes("<gpx")) {
+    throw new Error("Invalid GPX content: not a GPX file");
+  }
+  return gpxContent;
+}
 
 /**
  * Analyzes a GPX file to detect repeating nodes, edges, and nodes with same coordinates
@@ -16,12 +29,11 @@ function analyzeGPXFile(gpxFilePath) {
   }
 
   // Read the GPX file
-  const gpxContent = fs.readFileSync(gpxFilePath, "utf8");
+  const gpxContent = validateGPXContent(fs.readFileSync(gpxFilePath, "utf8"));
   console.log(`File loaded, content length: ${gpxContent.length} characters`);
 
   // Parse the XML content
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(gpxContent, "text/xml");
+  const xmlDoc = DOMParser.parseFromString(gpxContent, "text/xml");
 
   // Extract track points
   const trackPoints = xmlDoc.getElementsByTagName("trkpt");
@@ -191,7 +203,7 @@ function analyzeGPX(gpxFilePath) {
     const formattedResults = formatResults(results);
     console.log(formattedResults);
 
-    // You can also save the results to a file
+    // Save the results to a file
     const outputFile = "gpx_analysis_results.txt";
     fs.writeFileSync(outputFile, formattedResults);
     console.log(`Results also saved to: ${outputFile}`);
@@ -200,23 +212,37 @@ function analyzeGPX(gpxFilePath) {
   } catch (error) {
     console.error(`Error analyzing GPX file: ${error.message}`);
     console.error(error.stack);
+    throw error; // Re-throw to handle it in the calling code
   }
 }
 
-// Try both possible paths to the file
-console.log("GPX Cleaning Tool Starting");
-try {
-  // Try the relative path first
-  analyzeGPX("OpenLayersWebMap/routes/testroute.gpx");
-} catch (error) {
-  console.log("Failed with relative path, trying absolute path...");
-  // Try absolute path as fallback
-  analyzeGPX(
-    "/c:/Users/hisha/Bachelorarbeit/RunEveryStreetTutorial/OpenLayersWebMap/routes/testroute.gpx"
-  );
-}
-
+// Export all functions
 module.exports = {
   analyzeGPXFile,
   analyzeGPX,
+  formatResults,
+  validateGPXContent,
 };
+
+// Only run the analysis if this file is being run directly
+if (require.main === module) {
+  console.log("GPX Cleaning Tool Starting");
+  try {
+    const relativePath = path.resolve(
+      __dirname,
+      "OpenLayersWebMap/routes/testroute.gpx"
+    );
+    analyzeGPX(relativePath);
+  } catch (error) {
+    console.log("Failed with relative path, trying absolute path...");
+    try {
+      const absolutePath =
+        "C:/Users/hisha/Bachelorarbeit/RunEveryStreetTutorial/OpenLayersWebMap/routes/testroute.gpx";
+      analyzeGPX(absolutePath);
+    } catch (secondError) {
+      console.error("Failed to analyze GPX file with both paths:");
+      console.error(error);
+      console.error(secondError);
+    }
+  }
+}

@@ -7,12 +7,14 @@ class Edge {
     this.travels = 0;
     this.visited = false;
     this.visitedOriginal = false;
+    this.augmentedEdge = false;
     this.distance = calcdistance(
       this.from.lat,
       this.from.lon,
       this.to.lat,
       this.to.lon
     );
+    this.augmentedPath = [];
     // if (!this.from.edges.includes(this)) {
     //   this.from.edges.push(this);
     // }
@@ -22,17 +24,19 @@ class Edge {
 
     // New method to check and add edges to nodes
     const addToNodeIfNotExists = (node) => {
-      const existingEdgeIndex = node.edges.findIndex(
-        (e) =>
-          e.wayid === this.wayid &&
-          // Check both directions
-          ((e.from.nodeId === this.from.nodeId &&
-            e.to.nodeId === this.to.nodeId) ||
-            (e.from.nodeId === this.to.nodeId &&
-              e.to.nodeId === this.from.nodeId))
-      );
-      if (existingEdgeIndex === -1) {
-        node.edges.push(this);
+      if (node.edges) {
+        const existingEdgeIndex = node.edges.findIndex(
+          (e) =>
+            e.wayid === this.wayid &&
+            // Check both directions
+            ((e.from.nodeId === this.from.nodeId &&
+              e.to.nodeId === this.to.nodeId) ||
+              (e.from.nodeId === this.to.nodeId &&
+                e.to.nodeId === this.from.nodeId))
+        );
+        if (existingEdgeIndex === -1) {
+          node.edges.push(this);
+        }
       }
     };
 
@@ -40,22 +44,6 @@ class Edge {
     addToNodeIfNotExists(this.from);
     addToNodeIfNotExists(this.to);
   }
-
-  // show() {
-  // 	strokeWeight(min(10, (this.travels + 1) * 2));
-  // 	stroke(55, 255, 255, 0.8);
-  // 	line(this.from.x, this.from.y, this.to.x, this.to.y);
-  // 	fill(0);
-  // 	// noStroke();
-  // 	if (this.hovered){
-  // 		strokeWeight(4); // Thicker line when hovered
-  // 		stroke(0, 255, 255, 0.8);
-  // 	}
-  // 	else if(this.selected){
-  // 		strokeWeight(5);
-  // 		stroke(100, 255, 255, 0.8);
-  // 	}
-  // }
 
   show() {
     // Map the coordinates from lat/lon to screen coordinates
