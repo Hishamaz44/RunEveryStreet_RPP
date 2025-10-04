@@ -8,6 +8,7 @@ A comprehensive web-based application for solving the Rural Postman Problem (RPP
 📁 **Multi-format Data Support** - GPX, CSV, and JSON file upload capabilities  
 🔍 **Advanced Data Filtering** - Environmental metrics, signal strength (RSSI/SNR), and coordinate filtering  
 🛣️ **Multiple Route Optimization Algorithms**:
+<<<<<<< HEAD
 
 - **CE1 Algorithm**
 - **CE2 Algorithm**
@@ -26,11 +27,28 @@ A comprehensive web-based application for solving the Rural Postman Problem (RPP
 - Vector layer controls with toggle visibility
 - Route visualization with waypoint tracking
 - Unvisited area overlay support
-- Interactive node selection and highlighting
+- # Interactive node selection and highlighting
 
-## 🛠️ Local Development
+  > > > > > > > a00fb3d14994f9bcfce766e8e36144262fbbe866
 
-This project uses Vite for fast development and modern build tooling.
+- **CE1 Algorithm**
+- **CE2 Algorithm**
+- **ECE Algorithm**
+- **Original Algorithm**
+
+# <<<<<<< HEAD
+
+📊 **Comprehensive Analytics**:
+
+- Real-time algorithm performance metrics
+- Route quality analysis and efficiency calculations
+- Exportable metrics in JSON format
+- Graph data export/import functionality
+
+## 🛠️ Running The Tool
+
+> > > > > > > a00fb3d14994f9bcfce766e8e36144262fbbe866
+> > > > > > > This project uses Vite for fast development and modern build tooling.
 
 ### Prerequisites
 
@@ -62,6 +80,8 @@ This project uses Vite for fast development and modern build tooling.
 
 ## 🎮 How to Use
 
+<<<<<<< HEAD
+
 ### Data Upload
 
 - **GPX Files**: Upload route data using the top-right file input
@@ -74,6 +94,23 @@ This project uses Vite for fast development and modern build tooling.
 - **Layer Control**: Toggle vector layer visibility using the "Vector Layer Visibility" button
 - **Node Selection**: Click on map nodes to set start points for algorithms
 - **Zoom & Pan**: Navigate the map to explore your route data
+
+=======
+
+### Data Upload
+
+- **GPX Files**: Upload route data using the top-right file input
+- **CSV Files**: Upload sensor data with environmental metrics
+- **Unvisited GPX**: Upload additional area data for comprehensive coverage
+- **Graph Data**: Import/export graph structures in JSON format
+
+### Map Interaction
+
+- **Layer Control**: Toggle vector layer visibility using the "Vector Layer Visibility" button
+- **Node Selection**: Click on map nodes to set start points for algorithms
+- **Zoom & Pan**: Navigate the map to explore your route data
+
+> > > > > > > a00fb3d14994f9bcfce766e8e36144262fbbe866
 
 ### Data Filtering
 
