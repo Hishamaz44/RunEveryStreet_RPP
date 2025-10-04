@@ -176,7 +176,7 @@ class AlgorithmMetrics {
     toggleButton.style.cssText = `
       position: fixed;
       top: 60px;
-      left: 10px;
+      left: 50px;
       z-index: 10000;
       background-color: #380702;
       color: white;
@@ -437,14 +437,6 @@ window.recordAlgorithmMetrics = (name, results, runtime) => {
     window.algorithmMetrics = new AlgorithmMetrics();
   }
   return window.algorithmMetrics.recordMetrics(name, results, runtime);
-};
-
-window.exportAlgorithmMetrics = () => {
-  if (!window.algorithmMetrics) {
-    console.error("algorithmMetrics not initialized!");
-    return;
-  }
-  return window.algorithmMetrics.exportMetrics();
 };
 
 // Add a test function

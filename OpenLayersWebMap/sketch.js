@@ -116,21 +116,6 @@ function setup() {
   });
 
   document
-    .getElementById("unvisitedGpxFile")
-    .addEventListener("change", function (e) {
-      let files = e.target.files;
-      if (files.length > 0) {
-        for (let i = 0; i < files.length; i++) {
-          if (files[i].name.endsWith(".gpx")) {
-            loadUnvisitedAreaGPX(files[i]);
-          } else {
-            alert("please select a gpx file");
-          }
-        }
-      }
-    });
-
-  document
     .getElementById("applyAlgorithm")
     .addEventListener("click", function () {
       applyCE1Algorithm();
@@ -157,24 +142,6 @@ function setup() {
     .getElementById("stopGreedyAlgorithm")
     .addEventListener("click", function () {
       stopGreedyAlgorithmHandler();
-    });
-
-  document
-    .getElementById("applySimpleGreedyAlgorithm")
-    .addEventListener("click", function () {
-      applySimpleGreedyAlgorithm();
-    });
-
-  document
-    .getElementById("stopSimpleGreedyAlgorithm")
-    .addEventListener("click", function () {
-      stopSimpleGreedyAlgorithmHandler();
-    });
-
-  document
-    .getElementById("exportMetrics")
-    .addEventListener("click", function () {
-      exportAlgorithmMetrics();
     });
 
   document
@@ -757,75 +724,6 @@ function stopGreedyAlgorithmHandler() {
     // Reset button visibility
     document.getElementById("applyGreedyAlgorithm").style.display = "block";
     document.getElementById("stopGreedyAlgorithm").style.display = "none";
-  }
-}
-
-function applySimpleGreedyAlgorithm() {
-  if (!startnode) {
-    showMessage("Please select a start node first");
-    return;
-  }
-
-  if (edges.length === 0) {
-    showMessage("No edges loaded. Please load map data first");
-    return;
-  }
-
-  // Show stop button and hide start button
-  document.getElementById("applySimpleGreedyAlgorithm").style.display = "none";
-  document.getElementById("stopSimpleGreedyAlgorithm").style.display = "block";
-
-  showMessage("Running Simple Greedy Algorithm... (Click Stop to interrupt)");
-
-  // Clear previous results
-  bestroute = null;
-  bestdistance = Infinity;
-  efficiencyhistory = [];
-  distancehistory = [];
-
-  // Run the simple greedy algorithm with default 100000 iterations
-  setTimeout(() => {
-    const startTime = Date.now();
-    const results = implementSimpleGreedyAlgorithm(startnode, 10000);
-    const endTime = Date.now();
-
-    // Reset button visibility
-    document.getElementById("applySimpleGreedyAlgorithm").style.display =
-      "block";
-    document.getElementById("stopSimpleGreedyAlgorithm").style.display = "none";
-
-    if (results && results.bestRoute) {
-      bestroute = results.bestRoute;
-      bestdistance = results.bestDistance;
-      efficiencyhistory = results.efficiencyHistory;
-      distancehistory = results.distanceHistory;
-
-      // Record metrics
-      recordAlgorithmMetrics("Simple Greedy Algorithm", results, {
-        endToEndRuntime: endTime - startTime,
-      });
-
-      showMessage(
-        `Simple Greedy Algorithm completed! Best distance: ${results.bestDistance.toFixed(
-          2
-        )}m, Efficiency: ${
-          results.summary.efficiency
-        } - View metrics for details`
-      );
-    } else {
-      showMessage("Simple Greedy Algorithm failed to find a solution");
-    }
-  }, 10); // Small delay to allow UI update
-}
-
-function stopSimpleGreedyAlgorithmHandler() {
-  const stopped = stopSimpleGreedyAlgorithm();
-  if (stopped) {
-    showMessage("Simple Greedy Algorithm stopping...");
-    // Reset button visibility
-    document.getElementById("applySimpleGreedyAlgorithm").style.display =
-      "block";
-    document.getElementById("stopSimpleGreedyAlgorithm").style.display = "none";
   }
 }
 
