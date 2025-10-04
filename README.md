@@ -21,14 +21,7 @@ A comprehensive web-based application for solving the Rural Postman Problem (RPP
 - Exportable metrics in JSON format
 - Graph data export/import functionality
 
-🎯 **Advanced Visualization**:
-
-- Vector layer controls with toggle visibility
-- Route visualization with waypoint tracking
-- Unvisited area overlay support
-- Interactive node selection and highlighting
-
-## 🛠️ Local Development
+## 🛠️ Running The Tool
 
 This project uses Vite for fast development and modern build tooling.
 
@@ -61,6 +54,7 @@ This project uses Vite for fast development and modern build tooling.
 4. **Open your browser to:** `http://localhost:3000`
 
 ## 🎮 How to Use
+
 
 ### Data Upload
 
