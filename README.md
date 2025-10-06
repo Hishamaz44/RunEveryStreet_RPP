@@ -67,7 +67,7 @@ In all cases, after the algorithm gets executed, you will get a window to save t
 
 In order to change how long the RES algorithm works, go to sketch and change the parameters of the implementGreedyAlgorithm function. The first parameter passed is the startnode, and the second is the runtime in milliseconds. It is currently set to 10000 milliseconds or 10 seconds
 
-## 👨‍💻 Author
+## Author
 
 **Hisham Abou Zeid**
 

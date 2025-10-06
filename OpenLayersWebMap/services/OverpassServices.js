@@ -252,7 +252,7 @@ function parseVisitedNodes(data) {
     var lon = XMLnodes[i].getAttribute("lon");
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
-    let node = new Node1(id, lat, lon);
+    let node = new Node(id, lat, lon);
     node.visited = false;
     node.visitedOriginal = true;
     checkNodeDuplicate(nodes, node);
@@ -347,7 +347,7 @@ function parseUnvisitedNodes(data) {
     maxlon = max(maxlon, lon);
     var nodeid = XMLnodes[i].getAttribute("id");
     let id = parseInt(nodeid);
-    let node = new Node1(id, lat, lon);
+    let node = new Node(id, lat, lon);
     checkNodeDuplicate(nodes, node);
   }
   console.timeEnd("parseUnvisitedNodes");
