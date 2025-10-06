@@ -1,0 +1,487 @@
+{
+  "startNode": {
+    "id": 30232948,
+    "lat": "51.8135562",
+    "lon": "10.3382624",
+    "edgeCount": 2
+  },
+  "allNodes": [
+    {
+      "id": 30232948,
+      "lat": "51.8135562",
+      "lon": "10.3382624",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 30826054,
+      "lat": "51.8136953",
+      "lon": "10.3382776",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2428065064,
+      "lat": "51.8139101",
+      "lon": "10.3382478",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2996349639,
+      "lat": "51.8139806",
+      "lon": "10.3381985",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2983726579,
+      "lat": "51.8140208",
+      "lon": "10.3381450",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 768882793,
+      "lat": "51.8140602",
+      "lon": "10.3380581",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 316039145,
+      "lat": "51.8136694",
+      "lon": "10.3374612",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 31392676,
+      "lat": "51.8136347",
+      "lon": "10.3376533",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 316039127,
+      "lat": "51.8136046",
+      "lon": "10.3379067",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2428065062,
+      "lat": "51.8135738",
+      "lon": "10.3380904",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2983726583,
+      "lat": "51.8141012",
+      "lon": "10.3373076",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 3214707943,
+      "lat": "51.8140890",
+      "lon": "10.3372990",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2983726581,
+      "lat": "51.8140443",
+      "lon": "10.3371724",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2983726580,
+      "lat": "51.8140230",
+      "lon": "10.3371524",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2996349641,
+      "lat": "51.8139843",
+      "lon": "10.3371296",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 316039150,
+      "lat": "51.8139414",
+      "lon": "10.3371320",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 4734551332,
+      "lat": "51.8141140",
+      "lon": "10.3376918",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2983726585,
+      "lat": "51.8141084",
+      "lon": "10.3375225",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2996349649,
+      "lat": "51.8141132",
+      "lon": "10.3377518",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 13023053418,
+      "lat": "51.8138574",
+      "lon": "10.3371698",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 30254439,
+      "lat": "51.8138266",
+      "lon": "10.3371892",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 316039143,
+      "lat": "51.8137819",
+      "lon": "10.3372316",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 316039144,
+      "lat": "51.8137412",
+      "lon": "10.3372867",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 30223964,
+      "lat": "51.8136976",
+      "lon": "10.3373746",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2983726582,
+      "lat": "51.8140865",
+      "lon": "10.3379834",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    },
+    {
+      "id": 2983726584,
+      "lat": "51.8141016",
+      "lon": "10.3379032",
+      "edgeCount": 2,
+      "visited": false,
+      "visitedOriginal": false
+    }
+  ],
+  "allEdges": [
+    {
+      "wayid": "9046985",
+      "from": 30232948,
+      "to": 30826054,
+      "distance": 0.015502468308703284,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "28743516",
+      "from": 2428065064,
+      "to": 2996349639,
+      "distance": 0.008540439811593576,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "28743516",
+      "from": 2996349639,
+      "to": 2983726579,
+      "distance": 0.005788512991326076,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "28743516",
+      "from": 2983726579,
+      "to": 768882793,
+      "distance": 0.007408049098533682,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "275982470",
+      "from": 316039145,
+      "to": 31392676,
+      "distance": 0.013757690359415146,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "275982470",
+      "from": 31392676,
+      "to": 316039127,
+      "distance": 0.017738129729171836,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "275982470",
+      "from": 316039127,
+      "to": 2428065062,
+      "distance": 0.01308428852380987,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "275982470",
+      "from": 2428065062,
+      "to": 30232948,
+      "distance": 0.01198469345218811,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "294759305",
+      "from": 2983726583,
+      "to": 3214707943,
+      "distance": 0.0014797983660580262,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "294759305",
+      "from": 3214707943,
+      "to": 2983726581,
+      "distance": 0.010022153926147442,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "294759305",
+      "from": 2983726581,
+      "to": 2983726580,
+      "distance": 0.002738571800867335,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "294759305",
+      "from": 2983726580,
+      "to": 2996349641,
+      "distance": 0.004579784645715798,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "294759305",
+      "from": 2996349641,
+      "to": 316039150,
+      "distance": 0.004773114501059757,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "295875041",
+      "from": 4734551332,
+      "to": 2983726585,
+      "distance": 0.011654726861017425,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "295875041",
+      "from": 2983726585,
+      "to": 2983726583,
+      "distance": 0.014794412011228013,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "480450352",
+      "from": 2996349649,
+      "to": 4734551332,
+      "distance": 0.0041255001089453925,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "480450359",
+      "from": 30826054,
+      "to": 2428065064,
+      "distance": 0.02397235851908324,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "513557250",
+      "from": 316039150,
+      "to": 13023053418,
+      "distance": 0.009695083605181213,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "513557250",
+      "from": 13023053418,
+      "to": 30254439,
+      "distance": 0.0036752952610097245,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "513557250",
+      "from": 30254439,
+      "to": 316039143,
+      "distance": 0.005761983865625049,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "521216447",
+      "from": 316039143,
+      "to": 316039144,
+      "distance": 0.005901548962807742,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "521216447",
+      "from": 316039144,
+      "to": 30223964,
+      "distance": 0.007746995078789382,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "521216447",
+      "from": 30223964,
+      "to": 316039145,
+      "distance": 0.006728485835411895,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "624085975",
+      "from": 768882793,
+      "to": 2983726582,
+      "distance": 0.005909407081617581,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "624085975",
+      "from": 2983726582,
+      "to": 2983726584,
+      "distance": 0.005763148963849667,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    },
+    {
+      "wayid": "624085975",
+      "from": 2983726584,
+      "to": 2996349649,
+      "distance": 0.010487217718026133,
+      "travels": 0,
+      "visited": false,
+      "visitedOriginal": false,
+      "augmentedEdge": false
+    }
+  ],
+  "metadata": {
+    "totalNodes": 26,
+    "totalEdges": 26,
+    "startNodeId": 30232948,
+    "timestamp": "2025-08-22T16:50:17.485Z",
+    "exportVersion": "1.0"
+  }
+}

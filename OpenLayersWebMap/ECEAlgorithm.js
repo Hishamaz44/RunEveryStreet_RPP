@@ -465,6 +465,12 @@ function generateGPX(pathNodes) {
 
 function downloadGPX(gpxString, filename = "route.gpx") {
   console.time("downloadGPX");
+
+  // Automatically add .gpx extension if not present
+  if (!filename.toLowerCase().endsWith(".gpx")) {
+    filename += ".gpx";
+  }
+
   const blob = new Blob([gpxString], { type: "application/gpx+xml" });
   const url = URL.createObjectURL(blob);
 

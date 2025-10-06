@@ -55,9 +55,6 @@
 		canvas {
 			margin:auto;
 		}
-		.layer-button{
-			position:fixed;width:150px;top:32px;right:100px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;
-		} 
 
 		.filter-section {
   margin-bottom: 15px;
@@ -103,18 +100,20 @@
 <body style="background-color:black;">
 	<div style="background-color:#380702;"><img src="assets/logosmalllit.png" /></div>
 	<div style='position:fixed;width:120px;top:32px;right:0px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;'>
-		<a href="https://codeberg.org/lejun/RunEveryStreet/">Source Code</a>
+		<a href="https://github.com/Hishamaz44/RunEveryStreet_RPP">Source Code</a>
 	</div>
 	<div></div>
 	<div style='position:fixed;width:40px;top:32px;right:0px;color:white;background:none;opacity:1;-webkit-transform:translate(-50%, -50%);transform:translate(-50%, -50%);font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;font-size:13px;text-align:center;vertical-align:middle;height:50px;'>
 		<a href=".">Restart</a>
 	</div>
-	<div >
-		<a class="layer-button" id="toggle-layer">Vector Layer Visibility</a>
-	</div>
 	<div id="map" class="map"></div>
-	<input type="file" id="gpxFile" accept=".gpx" multiple style="position:fixed;top:60px;right:0px;z-index:1000;">
-	<input type="file" id="csvFile" accept=".csv" multiple style="position:fixed;top:90px;right:0px;z-index:1000;">
+	<!-- Hidden file inputs -->
+	<input type="file" id="gpxFile" accept=".gpx" multiple style="display:none;">
+	<input type="file" id="csvFile" accept=".csv" multiple style="display:none;">
+	
+	<!-- Custom styled buttons -->
+	<button id="gpxButton" style="position:fixed;top:60px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Upload GPX Route</button>
+	<button id="csvButton" style="position:fixed;top:100px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Upload CSV Data</button>
 
 	<!-- NEW: Complete Filter Controls Panel - Bottom Left -->
 <div id="filterPanel" style="position:fixed;bottom:60px;left:30px;z-index:1000;background-color:rgba(56,7,2,0.9);color:white;padding:15px;border-radius:5px;width:340px;max-height:400px;overflow-y:auto;font-family:'Lucida Sans Unicode', 'Lucida Grande', sans-serif;font-size:12px;display:none;">
@@ -202,8 +201,8 @@
 <button id="applyCE2Algorithm" style="position:fixed;top:230px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply CE2 Algorithm</button>
 <button id="exportGraphData" style="position:fixed;top:270px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Export Graph Data</button>
 <button id="importGraphData" style="position:fixed;top:310px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Import Graph Data</button>
-<button id="applyGreedyAlgorithm" style="position:fixed;top:350px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply Greedy Algorithm</button>
-<button id="stopGreedyAlgorithm" style="position:fixed;top:390px;right:10px;z-index:1000;background-color:#cc0000;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;display:none;">Stop Greedy Algorithm</button>
+<button id="applyGreedyAlgorithm" style="position:fixed;top:350px;right:10px;z-index:1000;background-color:#380702;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;">Apply RES Algorithm</button>
+<button id="stopGreedyAlgorithm" style="position:fixed;top:390px;right:10px;z-index:1000;background-color:#cc0000;color:white;border:1px solid white;padding:5px 10px;cursor:pointer;display:none;">Stop RES Algorithm</button>
 
 	<!-- Load your modules -->
 	<script type="module" src="graphConverter.js"></script>
@@ -216,10 +215,21 @@
   <script type="module" src="ECEAlgorithm.js"></script>
   <script type="module" src="CE2Algorithm.js"></script>
 	<script src="Edge.js"></script>
-	<script src="Node1.js"></script>
+	<script src="Node.js"></script>
 	<script src="Route.js"></script>
 	<script src="GreedyAlgorithm.js"></script>
 	<script src="MetricsDisplay.js"></script>
 	<script src="sketch.js"></script>
+	
+	<!-- Script to connect custom buttons to file inputs -->
+	<script>
+		document.getElementById('gpxButton').addEventListener('click', function() {
+			document.getElementById('gpxFile').click();
+		});
+		
+		document.getElementById('csvButton').addEventListener('click', function() {
+			document.getElementById('csvFile').click();
+		});
+	</script>
 </body>
 </html>

@@ -1,54 +1,19 @@
 # RunEveryStreet RPP
 
-A comprehensive web-based application for solving the Rural Postman Problem (RPP) using OpenLayers and advanced graph algorithms.
+This is a tweaked fork of Solipsia's RunEveryStreet (RES) that implements the Rural Postman Problem (RPP) in addition to the already implemented Chinese Postman Problem (CPP) solution to RES. The RPP is a generalization of the CPP, where only a subset of the graph is required.
 
-## ✨ Features
+## New Features
 
-🗺️ **Interactive Mapping** - OpenLayers-based map interface with geolocation support  
-📁 **Multi-format Data Support** - GPX, CSV, and JSON file upload capabilities  
-🔍 **Advanced Data Filtering** - Environmental metrics, signal strength (RSSI/SNR), and coordinate filtering  
-🛣️ **Multiple Route Optimization Algorithms**:
-<<<<<<< HEAD
+RES now supports several additonal functionalities to allow for the RPP.
 
-- **CE1 Algorithm**
-- **CE2 Algorithm**
-- **ECE Algorithm**
-- **Original Algorithm**
+1. Ability to upload routes that will be classified by the tool as visited.
+2. Three new algorithms were implemented, based on the work of Holmberg (2010), namely algorithms CE1, CE2, and ECE. Those are heuristic aimed at solving the RPP.
+3. A filter function that filters the uploaded routes by metadata.
+4. Graph data export/import functionality. This is done for two reasons: First, to allow for systemic testing across the different algorithms. Secondly, to bypass the loading times of the OpenStreetMap(OSM) API call if one wants to test a large dataset multiple times.
 
-📊 **Comprehensive Analytics**:
+## Setup
 
-- Real-time algorithm performance metrics
-- Route quality analysis and efficiency calculations
-- Exportable metrics in JSON format
-- Graph data export/import functionality
-
-🎯 **Advanced Visualization**:
-
-- Vector layer controls with toggle visibility
-- Route visualization with waypoint tracking
-- Unvisited area overlay support
-- # Interactive node selection and highlighting
-
-  > > > > > > > a00fb3d14994f9bcfce766e8e36144262fbbe866
-
-- **CE1 Algorithm**
-- **CE2 Algorithm**
-- **ECE Algorithm**
-- **Original Algorithm**
-
-# <<<<<<< HEAD
-
-📊 **Comprehensive Analytics**:
-
-- Real-time algorithm performance metrics
-- Route quality analysis and efficiency calculations
-- Exportable metrics in JSON format
-- Graph data export/import functionality
-
-## 🛠️ Running The Tool
-
-> > > > > > > a00fb3d14994f9bcfce766e8e36144262fbbe866
-> > > > > > > This project uses Vite for fast development and modern build tooling.
+This project uses Vite for fast development and modern build tooling.
 
 ### Prerequisites
 
@@ -60,148 +25,47 @@ A comprehensive web-based application for solving the Rural Postman Problem (RPP
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Hishamaz44/RunEveryStreet_RPP.git
+   git clone <https://github.com/Hishamaz44/RunEveryStreet_RPP.git>
    cd RunEveryStreet_RPP
+
    ```
 
 2. **Install dependencies:**
 
    ```bash
    npm install
+
    ```
 
 3. **Start development server:**
 
    ```bash
    npm run dev
+
    ```
 
-4. **Open your browser to:** `http://localhost:3000`
+## How to Run the Tool
 
-## 🎮 How to Use
+After loading the main page, you can do the following to execute the CPP for route finding:
 
-<<<<<<< HEAD
+1. Pan to the area of choice, click on the button on the top to retrieve the OSM data within the bounding box (These will be marked by the tool as unvisited, or required). Here you can choose the starting point then trim unwanted edges.
+2. After doing the steps below, you can either run the original RES algorithm by clicking the button on the top, or run one of the implemented algorithms (CE1, CE2, or ECE) by clicking the buttons on the side.
+3. You will get a popup to install the GPX file (the route generate by the algorithm), and will be able to see the metrics by clicking on the "Show Metrics" button (if you chose one of the three new algorithms), or get a popup with the metrics on the main page (if you chose the RES algorithm).
 
-### Data Upload
+To execute the RPP for route finding:
 
-- **GPX Files**: Upload route data using the top-right file input
-- **CSV Files**: Upload sensor data with environmental metrics
-- **Unvisited GPX**: Upload additional area data for comprehensive coverage
-- **Graph Data**: Import/export graph structures in JSON format
+1. Use one of the buttons on the right to upload either a GPX route or a CSV file. The entirety of the GPX route will be shown on the map in blue, while the CSV data will trigger the filter function. In the "Show Filters" button on the bottom left side, you can choose the filters you want, extract the points that match your chosen filters, and show those only on the map. The data retrieved from the GPX or CSV files will be marked as visited.
+2. Pan to your area of choice, retrieve the OSM data (which will be marked as unvisited). Now you can choose the starting node and trim unwanted edges, and execute one of the three implemented algorithms. Make sure to choose a node that is **not** marked as visited, otherwise the algorithms won't work.
 
-### Map Interaction
+Finally, for systemic testing (this was also done to test the speeds and efficiency of the implemented algorithms), do the following:
 
-- **Layer Control**: Toggle vector layer visibility using the "Vector Layer Visibility" button
-- **Node Selection**: Click on map nodes to set start points for algorithms
-- **Zoom & Pan**: Navigate the map to explore your route data
+1. Pan to the area of choice, extract the OSM data, and choose a starting node. Click on export Graph data and save the file (saved as JSON). This will export the graph data as a JSON file (In this case, all the graph data will be labelled as required). on the other hand, if you want to have a mixed graph with required and non-required parts, upload a GPX/CSV file first, then pan to the area and extract the OSM data by clicking on the button on top. Continue to choose a starting node and trim unwanted edges. Click on Export Graph Data to export the required and non-required graph.
+2. Import that same data, and run one of the 4 algorithms on the side.
+3. In this case, if the RES algorithm is to be executed, you will need to run it by clicking on the button on the side, labelled RES Algorithm.
 
-=======
+In all cases, after the algorithm gets executed, you will get a window to save the file as a GPX file.
 
-### Data Upload
-
-- **GPX Files**: Upload route data using the top-right file input
-- **CSV Files**: Upload sensor data with environmental metrics
-- **Unvisited GPX**: Upload additional area data for comprehensive coverage
-- **Graph Data**: Import/export graph structures in JSON format
-
-### Map Interaction
-
-- **Layer Control**: Toggle vector layer visibility using the "Vector Layer Visibility" button
-- **Node Selection**: Click on map nodes to set start points for algorithms
-- **Zoom & Pan**: Navigate the map to explore your route data
-
-> > > > > > > a00fb3d14994f9bcfce766e8e36144262fbbe866
-
-### Data Filtering
-
-- **Access Filters**: Click "Show Filters" in the bottom-left corner
-- **Environmental Metrics**: Filter by altitude, temperature, humidity, pressure
-- **Signal Strength**: Filter by RSSI values for multiple gateways (GW1-IGE, GW2-IEI, GW3-IFI)
-- **Signal Quality**: Filter by SNR (Signal-to-Noise Ratio) metrics
-- **Apply Filters**: Use filtered data for algorithm processing
-
-### Algorithm Execution
-
-1. **Select Start Node**: Click on a map node to set the starting point
-2. **Choose Algorithm**: Click any algorithm button (CE1, CE2, ECE, Greedy, Simple Greedy)
-3. **Monitor Progress**: View real-time algorithm status and completion messages
-4. **Analyze Results**: Export metrics for detailed performance analysis
-
-## 📄 Project Structure
-
-```
-RunEveryStreet_RPP/
-├── OpenLayersWebMap/          # Main application directory
-│   ├── index.html            # Main HTML interface
-│   ├── sketch.js             # Core application logic & map setup
-│   ├── CE1Algorithm.js       # Chinese Postman variant 1
-│   ├── CE2Algorithm.js       # Chinese Postman variant 2
-│   ├── ECEAlgorithm.js       # Efficient Chinese Postman
-│   ├── GreedyAlgorithm.js    # Iterative greedy solver
-│   ├── SimpleGreedyAlgorithm.js # Lightweight greedy
-│   ├── MetricsDisplay.js     # Performance analytics
-│   ├── graphConverter.js     # Graph data structures
-│   ├── graphologyConverter.js # Graphology integration
-│   ├── Edge.js              # Edge data structure
-│   ├── Node1.js             # Node data structure
-│   ├── Route.js             # Route data structure
-│   ├── services/            # Data processing services
-│   │   ├── filterFunction.js # Data filtering logic
-│   │   ├── GpxServices.js   # GPX file processing
-│   │   └── OverpassServices.js # OSM data integration
-│   ├── utils/               # Utility functions
-│   │   └── GraphFunctions.js # Graph operations
-│   ├── libraries/           # External libraries (P5.js, etc.)
-│   ├── routes/             # Sample GPX test files
-│   └── assets/             # Images and static resources
-├── dist/                   # Production build output
-├── package.json           # Dependencies and scripts
-├── vite.config.js        # Vite build configuration
-└── README.md             # This file
-```
-
-## 🔧 Technologies Used
-
-- **[Vite](https://vitejs.dev/)** - Modern build tool and development server
-- **[OpenLayers](https://openlayers.org/)** - Interactive web mapping library
-- **[P5.js](https://p5js.org/)** - Creative coding and visualization framework
-- **[Graphology](https://graphology.github.io/)** - Robust graph data structures and algorithms
-- **[Graphlib](https://github.com/dagrejs/graphlib)** - Additional graph algorithms
-- **JavaScript ES6+** - Modern JavaScript with module support
-- **Overpass API** - OpenStreetMap data integration
-
-## 📊 Data Processing Capabilities
-
-- **GPX Parsing**: Route coordinate extraction and simplification
-- **CSV Processing**: Sensor data with environmental metrics
-- **OSM Integration**: Automatic street network extraction via Overpass API
-- **Graph Construction**: Node/edge network generation from geographic data
-- **Data Filtering**: Multi-criteria filtering with real-time preview
-- **Export Formats**: GPX route export, JSON graph data, metrics reports
-
-## 🚀 Performance Features
-
-- **Chunked Processing**: Handles large datasets (>600 points) efficiently
-- **Time-bounded Execution**: Algorithms with configurable time limits
-- **Memory Optimization**: Efficient graph data structures
-- **Real-time Metrics**: Live performance monitoring and analysis
-- **Caching**: Graph data persistence for repeated analysis
-
-## 📝 License
-
-MIT License - Feel free to use this project for learning and development!
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📚 Academic Context
-
-This project was developed as part of a Bachelor's thesis on the Rural Postman Problem and its applications in urban route optimization.
+In order to change how long the RES algorithm works, go to sketch and change the parameters of the implementGreedyAlgorithm function. The first parameter passed is the startnode, and the second is the runtime in milliseconds. It is currently set to 10000 milliseconds or 10 seconds
 
 ## 👨‍💻 Author
 

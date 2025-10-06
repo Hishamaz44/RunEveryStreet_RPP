@@ -239,11 +239,6 @@ function draw() {
       showReportOut();
     }
   }
-  // showNodes();
-  // showEdges();
-  // console.log(mode);
-
-  // Removed automatic algorithm execution - algorithms now only run when explicitly requested via buttons
 }
 
 function drawMask() {
@@ -369,13 +364,12 @@ function mousePressed() {
       // clicked on button
       mode = solveRESmode;
       showMessage("Calculating… Click to stop when satisfied");
-      console.log("mode is equal to: ", mode);
       showNodes(); // recalculate closest node
       solveRES();
       return;
     } else {
       // Only trim the edge if it's close enough to the mouse cursor
-      const DISTANCE_THRESHOLD = 20; // Adjust this value as needed (in pixels)
+      const DISTANCE_THRESHOLD = 30; // Adjust this value as needed (in pixels)
 
       if (closestedgetomouse >= 0) {
         let dist = edges[closestedgetomouse].distanceToPoint(mouseX, mouseY);
@@ -385,6 +379,17 @@ function mousePressed() {
         }
       }
     }
+  }
+  if (
+    mode == solveRESmode &&
+    mouseY < btnBRy &&
+    mouseY > btnTLy &&
+    mouseX > btnTLx &&
+    mouseX < btnBRx
+  ) {
+    mode = downloadGPXmode;
+    bestroute.exportGPX();
+    showMessage("Route Completed!");
   }
 }
 
@@ -413,9 +418,6 @@ function getNodebyId(id) {
   }
   return null;
 }
-
-// this is a section to add all the remaining runEveryStreet code
-// ... existing code ...
 function showNodes() {
   const HOVER_THRESHOLD = 12; // pixels
 
@@ -439,6 +441,7 @@ function showNodes() {
     if (mode == selectnodemode && d < closestnodetomousedist) {
       closestnodetomousedist = d;
       closestnodetomouse = i;
+      showMessage("Select the starting node");
     }
   }
 
@@ -459,14 +462,6 @@ function showNodes() {
     pop();
   }
 }
-
-// Uncaught UsageGraphError: Graph.addUndirectedEdge: an edge linking "29691831" to "1932273593" already exists. If you really want to add multiple edges linking those nodes, you should create a multi graph by using the 'multi' option.
-// at addEdge (graphology.js?v=b3a0f1e6:2507:11)
-// at Graph.<computed> [as addUndirectedEdge] (graphology.js?v=b3a0f1e6:4490:16)
-// at createGraph2 (graphologyConverter.js:24:13)
-// at draw (sketch.js:252:25)
-// at p5.redraw (p5.js:51956:7)
-// at p5.<anonymous> (p5.js:46250:12)
 
 function applyCE1Algorithm() {
   if (!startnode) {
@@ -683,10 +678,10 @@ function applyGreedyAlgorithm() {
   efficiencyhistory = [];
   distancehistory = [];
 
-  // Run the greedy algorithm with default 1000 iterations
+  // Run the greedy algorithm
   setTimeout(() => {
     const startTime = Date.now();
-    const results = implementGreedyAlgorithm(startnode, 500000);
+    const results = implementGreedyAlgorithm(startnode, 10000);
     const endTime = Date.now();
 
     // Reset button visibility
@@ -812,7 +807,7 @@ function importGraphData(jsonData) {
 
     // Import nodes
     data.allNodes.forEach((nodeData) => {
-      const node = new Node1(nodeData.id, nodeData.lat, nodeData.lon);
+      const node = new Node(nodeData.id, nodeData.lat, nodeData.lon);
       node.visited = nodeData.visited || false;
       node.visitedOriginal = nodeData.visitedOriginal || false;
       nodes.push(node);
@@ -955,4 +950,74 @@ function setupImportButton() {
       document.body.removeChild(fileInput);
     });
   }
+}
+
+function showReportOut() {
+  // Get the latest metrics from the MetricsDisplay system
+  let latestMetrics = null;
+  if (window.algorithmMetrics && window.algorithmMetrics.metrics.size > 0) {
+    // Get the most recent metrics
+    const sortedMetrics = Array.from(
+      window.algorithmMetrics.metrics.values()
+    ).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    latestMetrics = sortedMetrics[0];
+  }
+
+  // Fallback values if no metrics available
+  let totalRoads = totaluniqueroads || 0;
+  let originalDistance = 0;
+  let totalRouteDistance = 0;
+  let repeatedEdgePercentage = 0;
+  let efficiency = 0;
+
+  if (latestMetrics && latestMetrics.routeQuality.isValid) {
+    originalDistance = latestMetrics.routeQuality.originalDistanceKm;
+    totalRouteDistance = latestMetrics.routeQuality.totalLengthKm;
+    repeatedEdgePercentage = latestMetrics.routeQuality.repeatedEdgePercentage;
+    efficiency = parseFloat(latestMetrics.efficiency); // Keep as decimal to match MetricsDisplay
+  } else if (bestroute && bestroute.distance) {
+    // Fallback calculation if metrics not available
+    originalDistance = edges
+      .filter((e) => !e.augmentedEdge)
+      .reduce((sum, e) => sum + e.distance, 0);
+    totalRouteDistance = bestroute.distance;
+    repeatedEdgePercentage =
+      ((totalRouteDistance - originalDistance) / totalRouteDistance) * 100;
+    efficiency = originalDistance / totalRouteDistance; // Keep as decimal to match MetricsDisplay
+  }
+
+  fill(250, 255, 0, 0.6);
+  noStroke();
+  rect(width / 2 - 150, height / 2 - 250, 300, 500);
+  fill(250, 255, 0, 0.15);
+  rect(width / 2 - 147, height / 2 - 247, 300, 500);
+  strokeWeight(1);
+  stroke(20, 255, 255, 0.8);
+  line(width / 2 - 150, height / 2 - 200, width / 2 + 150, height / 2 - 200);
+  noStroke();
+  fill(0, 0, 255, 1);
+  textSize(28);
+  textAlign(CENTER);
+  text("Route Summary", width / 2, height / 2 - 215);
+  fill(0, 0, 255, 0.75);
+  textSize(16);
+  text("Route length", width / 2, height / 2 - 170 + 0 * 95);
+  text("Total length of roads", width / 2, height / 2 - 170 + 1 * 95);
+  text("Repeated edges %", width / 2, height / 2 - 170 + 2 * 95);
+  text("Efficiency", width / 2, height / 2 - 170 + 3 * 95);
+
+  textSize(36);
+  fill(20, 255, 255, 1);
+  text(
+    nf(totalRouteDistance, 0, 1) + "km",
+    width / 2,
+    height / 2 - 120 + 0 * 95
+  );
+  text(nf(originalDistance, 0, 1) + "km", width / 2, height / 2 - 120 + 1 * 95);
+  text(
+    nf(repeatedEdgePercentage, 0, 1) + "%",
+    width / 2,
+    height / 2 - 120 + 2 * 95
+  );
+  text(nf(efficiency, 0, 3), width / 2, height / 2 - 120 + 3 * 95);
 }
